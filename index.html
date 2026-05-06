@@ -1397,6 +1397,18 @@ function V2NaturalOrganic({ tweaks }) {
         .v2-lots-stat strong sup { font-size: 18px; vertical-align: top; margin-left: 2px; }
         .v2-lots-stat small { font-size: 12px; color: rgba(246,240,230,.7); display: block; margin-top: 12px; line-height: 1.4; }
 
+        /* Plano lightbox */
+        .v2-plano-lb { position:fixed;inset:0;z-index:300;background:rgba(10,10,8,.94);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;animation:v2-lb-in .2s ease both; }
+        .v2-plano-lb img { max-width:94vw;max-height:90vh;border-radius:12px;box-shadow:0 32px 100px rgba(0,0,0,.6);object-fit:contain; }
+        .v2-plano-lb-close { position:absolute;top:20px;right:20px;width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s; }
+        .v2-plano-lb-close:hover { background:var(--terracota); }
+        .v2-plan-wrap { cursor:zoom-in; }
+        .v2-plan-wrap:hover .v2-plan-card img { filter:grayscale(1) contrast(1.25) brightness(1.04); }
+        @media (max-width:720px) {
+          .v2-plan-wrap { padding:10px; border-radius:20px; }
+          .v2-plan-card-label { font-size:13px !important; padding:7px 12px !important; }
+          .v2-plan-tag { font-size:9px !important; padding:6px 10px !important; }
+        }
         .v2-plan-wrap {
           position: relative; z-index: 1;
           background: linear-gradient(180deg, var(--cream) 0%, #fff 100%);
@@ -1678,13 +1690,28 @@ function V2NaturalOrganic({ tweaks }) {
             <div className="v2-lots-stat"><strong>155<sup>m²</sup></strong><small>Superficie mínima</small></div>
             <div className="v2-lots-stat"><strong>200<sup>m²</sup></strong><small>Mayoría de los lotes</small></div>
           </div>
-          <div className="v2-plan-wrap">
-            <div className="v2-plan-card">
-              <span className="v2-plan-card-label">Calle <em>Rancho Soyola</em></span>
-              <span className="v2-plan-tag">Etapa actual</span>
-              <img src="soyolaplano.png" alt="Plano Calle Rancho Soyola" data-comment-anchor="f7867e0c32-img-839-15" />
-            </div>
-          </div>
+          {(() => {
+            const [planoOpen, setPlanoOpen] = React.useState(false);
+            return (
+              <React.Fragment>
+                <div className="v2-plan-wrap" onClick={() => setPlanoOpen(true)} title="Click para ampliar">
+                  <div className="v2-plan-card">
+                    <span className="v2-plan-card-label">Calle <em>Rancho Soyola</em></span>
+                    <span className="v2-plan-tag">Etapa actual</span>
+                    <img src="soyolaplano.png" alt="Plano Calle Rancho Soyola" />
+                  </div>
+                  <div style={{textAlign:'center',padding:'8px 0 4px',fontSize:11,color:'rgba(45,42,38,.45)',letterSpacing:'.08em'}}>🔍 Toca para ampliar</div>
+                </div>
+                {planoOpen && ReactDOM.createPortal(
+                  <div className="v2-plano-lb" onClick={() => setPlanoOpen(false)}>
+                    <img src="soyolaplano.png" alt="Plano Calle Rancho Soyola" onClick={e => e.stopPropagation()} />
+                    <button className="v2-plano-lb-close" onClick={() => setPlanoOpen(false)}>✕</button>
+                  </div>,
+                  document.body
+                )}
+              </React.Fragment>
+            );
+          })()}
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40, position: 'relative', zIndex: 1 }}>
             <a className="v2-btn v2-btn-primary" href="#contacto">Solicitar últimos lotes →</a>
           </div>
