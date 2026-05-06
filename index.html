@@ -1307,9 +1307,19 @@ function V2NaturalOrganic({ tweaks }) {
           .v2-footer-name { font-size: 22px !important; }
           /* Hide topo parallax on mobile completely */
           .topo-layer { display: none !important; }
-          /* Mobile: hide video, show image immediately */
+          /* Mobile: hide video, show image immediately + Ken Burns */
           .v2-hero-frame video { display: none !important; }
-          .v2-hero-frame img { opacity: 1 !important; transition: none !important; }
+          .v2-hero-frame img {
+            opacity: 1 !important; transition: none !important;
+            animation: v2-ken-burns 14s ease-in-out infinite alternate;
+            transform-origin: center center;
+          }
+          @keyframes v2-ken-burns {
+            0%   { transform: scale(1)    translateX(0px)   translateY(0px); }
+            33%  { transform: scale(1.06) translateX(-8px)  translateY(-4px); }
+            66%  { transform: scale(1.04) translateX(6px)   translateY(-6px); }
+            100% { transform: scale(1.08) translateX(-4px)  translateY(4px); }
+          }
           /* Reduce blob opacity further */
           .v2-fblob-1, .v2-fblob-2, .v2-fblob-3, .v2-fblob-4, .v2-fblob-5, .v2-fblob-6, .v2-fblob-7 { opacity: .12 !important; }
         }
