@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://sanandres.mx/sitemap.xml
+Sitemap: https://sanandresresidencial.com/sitemap.xml
