@@ -1305,8 +1305,11 @@ function V2NaturalOrganic({ tweaks }) {
           .v2-plan-legend { grid-template-columns: 1fr 1fr; }
           .v2-footer { padding: 40px 18px !important; border-radius: 28px 28px 0 0 !important; }
           .v2-footer-name { font-size: 22px !important; }
-          /* Hide topo parallax on mobile completely */
-          .topo-layer { display: none !important; }
+          /* Topo: static on mobile (no parallax), subtle */
+          .topo-layer { transform: none !important; }
+          .topo-layer > div:nth-child(1) { opacity: .09 !important; }
+          .topo-layer > div:nth-child(2) { opacity: .07 !important; }
+          .topo-layer > div:nth-child(3) { opacity: .06 !important; }
           /* Mobile: hide video, show image immediately + Ken Burns */
           .v2-hero-frame video { display: none !important; }
           .v2-hero-frame img {
@@ -1319,8 +1322,10 @@ function V2NaturalOrganic({ tweaks }) {
             50%  { transform: scale(1.07); }
             100% { transform: scale(1.05); }
           }
-          /* Reduce blob opacity further */
-          .v2-fblob-1, .v2-fblob-2, .v2-fblob-3, .v2-fblob-4, .v2-fblob-5, .v2-fblob-6, .v2-fblob-7 { opacity: .12 !important; }
+          /* Blobs: more visible on mobile */
+          .v2-fblob-1 { opacity: .28 !important; }
+          .v2-fblob-2 { opacity: .22 !important; }
+          .v2-fblob-3, .v2-fblob-4, .v2-fblob-5, .v2-fblob-6, .v2-fblob-7 { opacity: .10 !important; }
         }
 
         /* MARQUEE */
