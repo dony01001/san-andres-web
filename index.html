@@ -763,11 +763,15 @@ function V2NaturalOrganic({ tweaks }) {
   const showBoho = !!t.showBoho;
   const heroVisual = t.heroVisual || 'video';
 
-  // AUTO-CYCLE hero image over video every 5s
+  // AUTO-CYCLE hero image over video every 5s (desktop only)
   React.useEffect(() => {
     const img = document.querySelector('.v2-hero-frame img');
     if (!img) return;
-    let showImg = false;
+    const isMobile = window.innerWidth <= 720;
+    if (isMobile) { img.classList.add('v2-img-visible'); return; }
+    // start showing image, then alternate
+    let showImg = true;
+    img.classList.add('v2-img-visible');
     const tick = () => {
       showImg = !showImg;
       img.classList.toggle('v2-img-visible', showImg);
@@ -1303,6 +1307,9 @@ function V2NaturalOrganic({ tweaks }) {
           .v2-footer-name { font-size: 22px !important; }
           /* Hide topo parallax on mobile completely */
           .topo-layer { display: none !important; }
+          /* Mobile: hide video, show image immediately */
+          .v2-hero-frame video { display: none !important; }
+          .v2-hero-frame img { opacity: 1 !important; transition: none !important; }
           /* Reduce blob opacity further */
           .v2-fblob-1, .v2-fblob-2, .v2-fblob-3, .v2-fblob-4, .v2-fblob-5, .v2-fblob-6, .v2-fblob-7 { opacity: .12 !important; }
         }
