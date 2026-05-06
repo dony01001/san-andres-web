@@ -763,6 +763,19 @@ function V2NaturalOrganic({ tweaks }) {
   const showBoho = !!t.showBoho;
   const heroVisual = t.heroVisual || 'video';
 
+  // AUTO-CYCLE hero image over video every 5s
+  React.useEffect(() => {
+    const img = document.querySelector('.v2-hero-frame img');
+    if (!img) return;
+    let showImg = false;
+    const tick = () => {
+      showImg = !showImg;
+      img.classList.toggle('v2-img-visible', showImg);
+    };
+    const id = setInterval(tick, 5000);
+    return () => clearInterval(id);
+  }, []);
+
   // INJECT GLOBAL BLOB STYLES to <head> so portal blobs get CSS
   React.useEffect(() => {
     const id = 'v2-blob-global-styles';
@@ -1177,9 +1190,9 @@ function V2NaturalOrganic({ tweaks }) {
           position: absolute; inset: 0;
           width: 100%; height: 100%; object-fit: cover;
           z-index: 2; opacity: 0;
-          transition: opacity .9s cubic-bezier(.4,0,.2,1);
+          transition: opacity 1.2s cubic-bezier(.4,0,.2,1);
         }
-        .v2-hero-visual:hover .v2-hero-frame img { opacity: 1; }
+        .v2-hero-frame img.v2-img-visible { opacity: 1; }
         .v2-hero-frame::after {
           content: '';
           position: absolute; inset: 0; z-index: 3;
