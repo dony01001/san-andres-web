@@ -7,9 +7,9 @@
 <meta name="description" content="Terrenos residenciales desde 155 m² en Tulancingo, Hidalgo. Privada con caseta 24/7, áreas verdes y plusvalía en aumento. Últimos lotes." />
 <meta property="og:title" content="Privada Residencial San Andrés · Tulancingo" />
 <meta property="og:description" content="Terrenos residenciales desde 155 m². Privada con caseta 24/7, áreas verdes y plusvalía en aumento." />
-<meta property="og:image" content="gallery-img-5.jpeg" />
+<meta property="og:image" content="gallery-img-5.webp" />
 <meta property="og:type" content="website" />
-<link rel="icon" href="logo-farol.png" />
+<link rel="icon" href="logo-farol.webp" />
 <link rel="canonical" href="https://sanandresresidencial.com/" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -244,12 +244,12 @@ window.V2TopoParallax = V2TopoParallax;
 
 const GALLERY_ITEMS = [
   // photos — used in grid
-  { type: 'photo', src: 'gallery-img-5.jpeg', label: 'Vista aérea', caption: 'El fraccionamiento y su entorno verde — Tulancingo, Hidalgo', featured: true },
-  { type: 'photo', src: 'gallery-img-4.jpeg', label: 'Áreas verdes', caption: 'Pozo de cantera y jardines en áreas comunes', portrait: true },
-  { type: 'photo', src: 'gallery-img-1.jpeg', label: 'Jardines', caption: 'Jardines y vegetación cuidada dentro del fraccionamiento' },
+  { type: 'photo', src: 'gallery-img-5.webp', label: 'Vista aérea', caption: 'El fraccionamiento y su entorno verde — Tulancingo, Hidalgo', featured: true },
+  { type: 'photo', src: 'gallery-img-4.webp', label: 'Áreas verdes', caption: 'Pozo de cantera y jardines en áreas comunes', portrait: true },
+  { type: 'photo', src: 'gallery-img-1.webp', label: 'Jardines', caption: 'Jardines y vegetación cuidada dentro del fraccionamiento' },
   { type: 'photo', src: 'gallery-img-3.jpeg', label: 'Palmeras y farol', caption: 'El farol característico entre las palmeras' },
-  { type: 'photo', src: 'gallery-img-7.jpeg', label: 'Calles adoquinadas', caption: 'Calles adoquinadas y mobiliario urbano' },
-  { type: 'photo', src: 'gallery-img-8.jpeg', label: 'Sendero', caption: 'Senderos y áreas de convivencia' },
+  { type: 'photo', src: 'gallery-img-7.webp', label: 'Calles adoquinadas', caption: 'Calles adoquinadas y mobiliario urbano' },
+  { type: 'photo', src: 'gallery-img-8.webp', label: 'Sendero', caption: 'Senderos y áreas de convivencia' },
   // videos
   { type: 'video', src: 'gallery-vid-1.mp4', label: 'Recorrido 1', caption: 'Recorrido por las áreas verdes' },
   { type: 'video', src: 'gallery-vid-2.mp4', label: 'Recorrido 2', caption: 'Vista de calles y jardines' },
@@ -492,7 +492,7 @@ function V2Gallery({ accent = '#a05a3c', primary = '#4a5a44', serif = '"DM Serif
 
         {/* Featured aerial */}
         <div className="v2-gallery-hero v2-fade" onClick={() => openLightbox(0)}>
-          <img src="gallery-img-5.jpeg" alt="Vista aérea Privada Residencial San Andrés" />
+          <img src="gallery-img-5.webp" alt="Vista aérea Privada Residencial San Andrés" />
           <div className="v2-gallery-hero-overlay">
             <span className="v2-gallery-hero-title">Vista aérea del fraccionamiento</span>
             <span className="v2-gallery-hero-tag">Tulancingo · Hgo.</span>
@@ -502,11 +502,11 @@ function V2Gallery({ accent = '#a05a3c', primary = '#4a5a44', serif = '"DM Serif
         {/* Photo grid */}
         <div className="v2-gallery-grid v2-fade">
           {[
-            { src: 'gallery-img-4.jpeg', label: 'Pozo de cantera', idx: 1 },
-            { src: 'gallery-img-1.jpeg', label: 'Jardines', idx: 2 },
+            { src: 'gallery-img-4.webp', label: 'Pozo de cantera', idx: 1 },
+            { src: 'gallery-img-1.webp', label: 'Jardines', idx: 2 },
             { src: 'gallery-img-3.jpeg', label: 'Palmeras y farol', idx: 3 },
-            { src: 'gallery-img-7.jpeg', label: 'Calles adoquinadas', idx: 4 },
-            { src: 'gallery-img-8.jpeg', label: 'Senderos', idx: 5 },
+            { src: 'gallery-img-7.webp', label: 'Calles adoquinadas', idx: 4 },
+            { src: 'gallery-img-8.webp', label: 'Senderos', idx: 5 },
           ].map(({ src, label, idx }, i) => (
             <div key={i} className={`v2-gallery-cell v2-gallery-cell-${i}`} onClick={() => openLightbox(idx)}>
               <img src={src} alt={label} loading="lazy" />
@@ -584,7 +584,7 @@ function VideoCard({ src, label, onClick, accent }) {
 window.V2Gallery = V2Gallery;
 
 // === v2-plano-stylized.jsx ===
-// Stylized site plan v2 — based on real planoabril2023 / soyolaplano.png
+// Stylized site plan v2 — based on real planoabril2023 / soyolaplano.webp
 // Real structure:
 //   - Calle Rancho San Lunes (top road)
 //   - Manzana XIX between San Lunes and Soyola: 2 rows of ~22 lots, 10x20m = 200 m²
@@ -1561,7 +1561,7 @@ function V2NaturalOrganic({ tweaks }) {
       <header className="v2-header" data-comment-anchor="afd1dfce2b-header-695-7">
         <div className="v2-brand">
           <div className="v2-brand-mark">
-            <img src="logo-farol.png" alt="San Andrés" />
+            <img src="logo-farol.webp" alt="San Andrés" />
           </div>
           <div className="v2-brand-text">
             <small>Privada Residencial</small>
@@ -1610,7 +1610,7 @@ function V2NaturalOrganic({ tweaks }) {
                 style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 1 }} />
               
             <img
-                src="gallery-img-4.jpeg"
+                src="gallery-img-4.webp"
                 alt="Pozo de cantera · Privada Residencial San Andrés"
                 className="v2-hover-reveal" />
               
@@ -1699,13 +1699,13 @@ function V2NaturalOrganic({ tweaks }) {
                   <div className="v2-plan-card">
                     <span className="v2-plan-card-label">Calle <em>Rancho Soyola</em></span>
                     <span className="v2-plan-tag">Etapa actual</span>
-                    <img src="soyolaplano.png" alt="Plano Calle Rancho Soyola" />
+                    <img src="soyolaplano.webp" alt="Plano Calle Rancho Soyola" />
                   </div>
                   <div style={{textAlign:'center',padding:'8px 0 4px',fontSize:11,color:'rgba(45,42,38,.45)',letterSpacing:'.08em'}}>🔍 Toca para ampliar</div>
                 </div>
                 {planoOpen && ReactDOM.createPortal(
                   <div className="v2-plano-lb" onClick={() => setPlanoOpen(false)}>
-                    <img src="soyolaplano.png" alt="Plano Calle Rancho Soyola" onClick={e => e.stopPropagation()} />
+                    <img src="soyolaplano.webp" alt="Plano Calle Rancho Soyola" onClick={e => e.stopPropagation()} />
                     <button className="v2-plano-lb-close" onClick={() => setPlanoOpen(false)}>✕</button>
                   </div>,
                   document.body
@@ -1892,7 +1892,7 @@ if (_ld) _ld.remove();
   "name": "Privada Residencial San Andrés",
   "description": "Terrenos residenciales desde 155 m² en Tulancingo, Hidalgo.",
   "url": "https://sanandres.mx/",
-  "image": "gallery-img-5.jpeg",
+  "image": "gallery-img-5.webp",
   "address": {
     "@type": "PostalAddress",
     "addressLocality": "Tulancingo",
