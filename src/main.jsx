@@ -1758,28 +1758,61 @@ function V2NaturalOrganic({ tweaks }) {
               </div>
             </li>
           </ul>
-          <form className="v2-form" data-comment-anchor="aa419e811b-form-912-11">
-            <h3>Solicita <em>información</em></h3>
-            <div className="v2-field">
-              <label>Nombre completo</label>
-              <input id="wa-nombre" type="text" placeholder="Tu nombre" />
-            </div>
-            <div className="v2-field">
-              <label>Teléfono / WhatsApp</label>
-              <input id="wa-tel" type="tel" placeholder="775 000 0000" />
-            </div>
-            <div className="v2-field">
-              <label>Mensaje</label>
-              <textarea id="wa-msg" rows="3" placeholder="Hola, me interesa conocer los lotes disponibles..." />
-            </div>
-            <button type="button" className="v2-btn v2-btn-primary v2-form-btn" onClick={() => {
-              const nombre = document.getElementById('wa-nombre')?.value || '';
-              const tel = document.getElementById('wa-tel')?.value || '';
-              const msg = document.getElementById('wa-msg')?.value || 'Hola, me interesa conocer los lotes disponibles.';
-              const text = encodeURIComponent(`Hola, soy ${nombre}${tel ? ` (${tel})` : ''}. ${msg}`);
-              window.open(`https://wa.me/527751612654?text=${text}`, '_blank');
-            }}>Enviar por WhatsApp →</button>
-          </form>
+          {(() => {
+            const [fields, setFields] = React.useState({ nombre: '', telefono: '', email: '', mensaje: '' });
+            const [status, setStatus] = React.useState('idle'); // idle | sending | ok | error
+            const set = k => e => setFields(f => ({ ...f, [k]: e.target.value }));
+            const handleSubmit = async e => {
+              e.preventDefault();
+              if (!fields.nombre.trim() || !fields.telefono.trim()) return;
+              setStatus('sending');
+              try {
+                const body = new URLSearchParams({
+                  'form-name': 'contacto',
+                  ...fields,
+                  'bot-field': '',
+                });
+                const res = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
+                if (res.ok) { setStatus('ok'); setFields({ nombre: '', telefono: '', email: '', mensaje: '' }); }
+                else setStatus('error');
+              } catch { setStatus('error'); }
+            };
+            if (status === 'ok') return (
+              <div className="v2-form" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, minHeight: 280, textAlign: 'center' }}>
+                <div style={{ fontSize: 48 }}>✓</div>
+                <h3 style={{ margin: 0 }}>¡Mensaje recibido!</h3>
+                <p style={{ color: 'var(--ink-soft)', margin: 0 }}>Un asesor te contactará pronto.</p>
+                <a href={`https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${fields.nombre || 'un interesado'}. Quiero información sobre los lotes.`)}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-ghost" style={{ marginTop: 8 }}>También escríbenos por WhatsApp →</a>
+              </div>
+            );
+            return (
+              <form className="v2-form" name="contacto" data-netlify="true" netlify-honeypot="bot-field" onSubmit={handleSubmit}>
+                <input type="hidden" name="form-name" value="contacto" />
+                <input name="bot-field" type="hidden" />
+                <h3>Solicita <em>información</em></h3>
+                <div className="v2-field">
+                  <label>Nombre completo *</label>
+                  <input type="text" name="nombre" value={fields.nombre} onChange={set('nombre')} placeholder="Tu nombre" required />
+                </div>
+                <div className="v2-field">
+                  <label>Teléfono / WhatsApp *</label>
+                  <input type="tel" name="telefono" value={fields.telefono} onChange={set('telefono')} placeholder="775 000 0000" required />
+                </div>
+                <div className="v2-field">
+                  <label>Correo electrónico</label>
+                  <input type="email" name="email" value={fields.email} onChange={set('email')} placeholder="tucorreo@gmail.com" />
+                </div>
+                <div className="v2-field">
+                  <label>Mensaje</label>
+                  <textarea name="mensaje" rows="3" value={fields.mensaje} onChange={set('mensaje')} placeholder="Hola, me interesa conocer los lotes disponibles..." />
+                </div>
+                {status === 'error' && <p style={{ color: '#c0392b', fontSize: 13, margin: '0 0 8px' }}>Error al enviar. Intenta de nuevo o escríbenos por WhatsApp.</p>}
+                <button type="submit" className="v2-btn v2-btn-primary v2-form-btn" disabled={status === 'sending'}>
+                  {status === 'sending' ? 'Enviando…' : 'Enviar mensaje →'}
+                </button>
+              </form>
+            );
+          })()}
         </div>
       </section>
 
