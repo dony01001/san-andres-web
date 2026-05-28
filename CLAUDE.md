@@ -83,21 +83,11 @@ Fuentes: `"Fraunces"` (títulos/italic), `"Manrope"` (body), `"DM Serif Display"
 
 ## Estado actual — pendientes
 
-### 🔴 Netlify Forms no confirmado
-El formulario de contacto usa Netlify Forms. Se hizo fix en último commit (`2477e1f`) cambiando `data-netlify="true"` → atributo `netlify`. **Verificar** que el form "contacto" aparece en Netlify → Forms después del próximo deploy.
+### ✅ Netlify Forms — FUNCIONANDO (confirmado may-2026)
+Formulario de contacto envía correos a `igdevi2089@gmail.com`. Confirmado con submit real. Detección vía hidden form con atributo `netlify` en `index.html` + POST urlencoded a `/` desde React (`form-name=contacto`).
 
-Si sigue sin aparecer, el `index.html` tiene:
-```html
-<form name="contacto" netlify netlify-honeypot="bot-field" hidden>
-  <input type="text" name="nombre" />
-  <input type="tel" name="telefono" />
-  <input type="email" name="email" />
-  <textarea name="mensaje"></textarea>
-  <input name="bot-field" />
-  <button type="submit">Enviar</button>
-</form>
-```
-Si Netlify sigue sin detectar, alternativa: usar Netlify Functions o Formspree.
+### ✅ Cumplimiento LFPDPPP (datos personales MX) — hecho (commit `48ac6a0`)
+Form tiene checkbox de consentimiento obligatorio + modal de Aviso de Privacidad (responsable, finalidades, derechos ARCO → `sanandres.fraccionamiento@gmail.com`). Link en footer y en el form. Submit bloqueado hasta aceptar. **Nota:** texto cubre mínimo legal; conviene revisión de abogado para versión blindada.
 
 ### Próximas mejoras sugeridas
 - Sección de noticias/promociones mensuales (estático en JSX, un array de objetos)
