@@ -734,6 +734,8 @@ function V2NaturalOrganic({ tweaks }) {
   const showBoho = !!t.showBoho;
   const heroVisual = t.heroVisual || 'video';
 
+  const [privacyOpen, setPrivacyOpen] = React.useState(false);
+
   // AUTO-CYCLE hero image over video every 5s (desktop only)
   React.useEffect(() => {
     const img = document.querySelector('.v2-hero-frame img');
@@ -1510,6 +1512,26 @@ function V2NaturalOrganic({ tweaks }) {
         }
         .v2-footer-social a:hover { background: var(--terracota); border-color: var(--terracota); transform: translateY(-3px); }
         .v2-footer-social svg { width: 20px; height: 20px; fill: currentColor; }
+        .v2-footer-link { background: none; border: none; cursor: pointer; padding: 0; font: inherit; color: var(--cream); opacity: .75; text-decoration: underline; text-underline-offset: 3px; }
+        .v2-footer-link:hover { opacity: 1; color: var(--terracota-soft); }
+
+        /* CONSENT checkbox */
+        .v2-consent { display: flex; align-items: flex-start; gap: 10px; margin: 4px 0 14px; font-size: 13px; line-height: 1.5; color: var(--ink); }
+        .v2-consent input[type="checkbox"] { margin-top: 2px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--terracota); cursor: pointer; }
+        .v2-link-btn { background: none; border: none; padding: 0; font: inherit; color: var(--terracota); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+        .v2-link-btn:hover { color: var(--sage-dark); }
+
+        /* PRIVACY modal */
+        .v2-privacy-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(45,42,38,.55); backdrop-filter: blur(4px); display: grid; place-items: center; padding: 20px; animation: v2-fade-in .2s ease; }
+        @keyframes v2-fade-in { from { opacity: 0; } to { opacity: 1; } }
+        .v2-privacy-modal { position: relative; background: var(--cream); border-radius: 24px; max-width: 640px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 36px 32px; box-shadow: 0 30px 80px rgba(0,0,0,.3); }
+        .v2-privacy-modal h2 { font-family: var(--serif); font-weight: 400; font-size: 28px; color: var(--ink); margin: 0 0 20px; }
+        .v2-privacy-modal h2 em { color: var(--terracota); font-style: italic; }
+        .v2-privacy-body { font-size: 14px; line-height: 1.6; color: var(--ink); }
+        .v2-privacy-body p { margin: 0 0 14px; }
+        .v2-privacy-body a { color: var(--terracota); }
+        .v2-privacy-close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 28px; line-height: 1; color: var(--ink); opacity: .6; cursor: pointer; }
+        .v2-privacy-close:hover { opacity: 1; }
       `}</style>
 
       <div style={{ position: 'relative' }} data-comment-anchor="018848739f-div-650-7">
@@ -1761,10 +1783,12 @@ function V2NaturalOrganic({ tweaks }) {
           {(() => {
             const [fields, setFields] = React.useState({ nombre: '', telefono: '', email: '', mensaje: '' });
             const [status, setStatus] = React.useState('idle'); // idle | sending | ok | error
+            const [accepted, setAccepted] = React.useState(false);
             const set = k => e => setFields(f => ({ ...f, [k]: e.target.value }));
             const handleSubmit = async e => {
               e.preventDefault();
               if (!fields.nombre.trim() || !fields.telefono.trim()) return;
+              if (!accepted) return;
               setStatus('sending');
               try {
                 const body = new URLSearchParams({
@@ -1806,8 +1830,12 @@ function V2NaturalOrganic({ tweaks }) {
                   <label>Mensaje</label>
                   <textarea name="mensaje" rows="3" value={fields.mensaje} onChange={set('mensaje')} placeholder="Hola, me interesa conocer los lotes disponibles..." />
                 </div>
+                <label className="v2-consent">
+                  <input type="checkbox" name="privacidad" checked={accepted} onChange={e => setAccepted(e.target.checked)} required />
+                  <span>He leído y acepto el <button type="button" className="v2-link-btn" onClick={() => setPrivacyOpen(true)}>Aviso de Privacidad</button> y el tratamiento de mis datos personales.</span>
+                </label>
                 {status === 'error' && <p style={{ color: '#c0392b', fontSize: 13, margin: '0 0 8px' }}>Error al enviar. Intenta de nuevo o escríbenos por WhatsApp.</p>}
-                <button type="submit" className="v2-btn v2-btn-primary v2-form-btn" disabled={status === 'sending'}>
+                <button type="submit" className="v2-btn v2-btn-primary v2-form-btn" disabled={status === 'sending' || !accepted}>
                   {status === 'sending' ? 'Enviando…' : 'Enviar mensaje →'}
                 </button>
               </form>
@@ -1830,7 +1858,30 @@ function V2NaturalOrganic({ tweaks }) {
           </a>
         </div>
         <p>© 2026 Privada Residencial San Andrés · Tulancingo, Hidalgo</p>
+        <p style={{ marginTop: 4 }}>
+          <button type="button" className="v2-footer-link" onClick={() => setPrivacyOpen(true)}>Aviso de Privacidad</button>
+        </p>
       </footer>
+
+      {/* MODAL: Aviso de Privacidad (LFPDPPP) */}
+      {privacyOpen && (
+        <div className="v2-privacy-overlay" onClick={() => setPrivacyOpen(false)} role="dialog" aria-modal="true" aria-label="Aviso de Privacidad">
+          <div className="v2-privacy-modal" onClick={e => e.stopPropagation()}>
+            <button type="button" className="v2-privacy-close" onClick={() => setPrivacyOpen(false)} aria-label="Cerrar">×</button>
+            <h2>Aviso de <em>Privacidad</em></h2>
+            <div className="v2-privacy-body">
+              <p><strong>Responsable.</strong> Privada Residencial San Andrés (en adelante, "el Responsable"), con domicilio en Carr. Tulancingo–Pachuca km 4.5, Col. Santa Alicia, Tulancingo, Hidalgo, C.P. 43700, es responsable del tratamiento y protección de sus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
+              <p><strong>Datos que recabamos.</strong> Nombre, teléfono, correo electrónico y el mensaje que usted nos proporcione a través del formulario de contacto.</p>
+              <p><strong>Finalidades.</strong> Sus datos serán utilizados para: (i) atender su solicitud de información sobre los lotes y servicios del fraccionamiento; (ii) contactarle por teléfono, WhatsApp o correo electrónico; y (iii) darle seguimiento comercial. No usaremos sus datos para finalidades distintas sin su consentimiento.</p>
+              <p><strong>Transferencias.</strong> No transferimos sus datos personales a terceros sin su consentimiento, salvo en los casos previstos por el artículo 37 de la LFPDPPP.</p>
+              <p><strong>Derechos ARCO.</strong> Usted puede ejercer en cualquier momento sus derechos de Acceso, Rectificación, Cancelación u Oposición (ARCO), así como revocar su consentimiento, enviando su solicitud al correo <a href="mailto:sanandres.fraccionamiento@gmail.com">sanandres.fraccionamiento@gmail.com</a>.</p>
+              <p><strong>Cambios al aviso.</strong> Este aviso de privacidad puede sufrir modificaciones; las actualizaciones se publicarán en este mismo sitio web.</p>
+              <p style={{ opacity: .7, fontSize: 13 }}>Última actualización: mayo 2026.</p>
+            </div>
+            <button type="button" className="v2-btn v2-btn-primary" onClick={() => setPrivacyOpen(false)} style={{ marginTop: 8 }}>Entendido</button>
+          </div>
+        </div>
+      )}
 
       {/* WhatsApp FAB */}
       <a
