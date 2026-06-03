@@ -1,6 +1,25 @@
 ﻿import React from 'react'
 import ReactDOM from 'react-dom'
 import { createRoot } from 'react-dom/client'
+
+// === Tracking de conversiones (GA4 + Google Ads) ===
+const ADS_ID = 'AW-17410208762';
+// Labels de conversión de Google Ads. Crear cada acción en
+// Google Ads → Objetivos → Conversiones → Nueva acción (origen: Sitio web),
+// y pegar aquí el label (la parte después de "AW-17410208762/").
+// Mientras estén vacíos, solo se envía el evento a GA4 (igual sirve para medir).
+const ADS_CONV = {
+  whatsapp_click: '',   // ej: 'AbC-D_efGhIjKl'
+  form_submit: '',      // ej: 'XyZ-1_23AbCdEf'
+};
+
+// Dispara evento a GA4 siempre, y a Google Ads si hay label configurado.
+function trackConv(name, params = {}) {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return;
+  window.gtag('event', name, params);
+  const label = ADS_CONV[name];
+  if (label) window.gtag('event', 'conversion', { send_to: `${ADS_ID}/${label}`, ...params });
+}
 // === v2-boho-bg.jsx ===
 // Boho-style background graphics: wood-grain swirls + concentric arcs
 // with terracota dots behind. Floats slowly in the background.
@@ -1566,7 +1585,7 @@ function V2NaturalOrganic({ tweaks }) {
           <a href="#lotes">Lotes</a>
           <a href="#galeria">Galería</a>
           <a href="#ubicacion">Ubicación</a>
-          <a href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Privada%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" className="v2-nav-cta" data-comment-anchor="a12b8b33a7-a-719-11">Agendar visita →</a>
+          <a href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Privada%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" className="v2-nav-cta" onClick={() => trackConv('whatsapp_click', { source: 'nav' })} data-comment-anchor="a12b8b33a7-a-719-11">Agendar visita →</a>
         </nav>
       </header>
 
@@ -1584,7 +1603,7 @@ function V2NaturalOrganic({ tweaks }) {
             de una privada y la plusvalía que tu patrimonio merece.
           </p>
           <div className="v2-hero-ctas">
-            <a className="v2-btn v2-btn-primary" href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Privada%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" data-comment-anchor="99be9e3b4c-a-700-13">Agendar visita →</a>
+            <a className="v2-btn v2-btn-primary" href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Privada%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero' })} data-comment-anchor="99be9e3b4c-a-700-13">Agendar visita →</a>
             <a className="v2-btn v2-btn-ghost" href="#lotes">Ver lotes</a>
           </div>
           <div className="v2-hero-pills">
@@ -1797,7 +1816,7 @@ function V2NaturalOrganic({ tweaks }) {
                   'bot-field': '',
                 });
                 const res = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
-                if (res.ok) { setStatus('ok'); setFields({ nombre: '', telefono: '', email: '', mensaje: '' }); }
+                if (res.ok) { trackConv('form_submit'); setStatus('ok'); setFields({ nombre: '', telefono: '', email: '', mensaje: '' }); }
                 else setStatus('error');
               } catch { setStatus('error'); }
             };
@@ -1806,7 +1825,7 @@ function V2NaturalOrganic({ tweaks }) {
                 <div style={{ fontSize: 48 }}>✓</div>
                 <h3 style={{ margin: 0 }}>¡Mensaje recibido!</h3>
                 <p style={{ color: 'var(--ink-soft)', margin: 0 }}>Un asesor te contactará pronto.</p>
-                <a href={`https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${fields.nombre || 'un interesado'}. Quiero información sobre los lotes.`)}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-ghost" style={{ marginTop: 8 }}>También escríbenos por WhatsApp →</a>
+                <a href={`https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${fields.nombre || 'un interesado'}. Quiero información sobre los lotes.`)}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-ghost" style={{ marginTop: 8 }} onClick={() => trackConv('whatsapp_click', { source: 'post_form' })}>También escríbenos por WhatsApp →</a>
               </div>
             );
             return (
@@ -1853,7 +1872,7 @@ function V2NaturalOrganic({ tweaks }) {
           <a href="https://www.instagram.com/fraccionamiento.sanandres/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="none" stroke="currentColor" strokeWidth="2"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
           </a>
-          <a href="https://wa.me/527751612654" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+          <a href="https://wa.me/527751612654" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" onClick={() => trackConv('whatsapp_click', { source: 'footer' })}>
             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </a>
         </div>
@@ -1890,6 +1909,7 @@ function V2NaturalOrganic({ tweaks }) {
         rel="noopener noreferrer"
         className="v2-wa-fab"
         aria-label="Contactar por WhatsApp"
+        onClick={() => trackConv('whatsapp_click', { source: 'fab' })}
       >
         <span className="v2-wa-fab-label">Escríbenos por WhatsApp</span>
         <svg viewBox="0 0 24 24" fill="currentColor">
