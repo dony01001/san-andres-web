@@ -1,7 +1,7 @@
-# Privada Residencial San Andrés — Claude Code Brief
+# Residencial San Andrés — Claude Code Brief
 
 ## Qué es este proyecto
-Sitio web de marketing para Privada Residencial San Andrés, fraccionamiento en Tulancingo, Hidalgo. Live en **sanandresresidencial.com**. SPA React + Vite. Auto-deploy desde GitHub → Netlify.
+Sitio web de marketing para Residencial San Andrés, fraccionamiento en Tulancingo, Hidalgo. **Importante (legal):** el sitio NO debe usar el término "privada/privado" ni sugerir bardeado o protección perimetral — no se ofrece. Sí existen y sí se mencionan: caseta con vigilante, circuito cerrado, pluma vehicular y tarjetas de acceso. Live en **sanandresresidencial.com**. SPA React + Vite. Auto-deploy desde GitHub → Netlify.
 
 ## Stack y archivos
 
