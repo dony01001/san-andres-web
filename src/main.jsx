@@ -476,12 +476,12 @@ function V2Gallery({ accent = '#a05a3c', primary = '#4a5a44', serif = '"DM Serif
         <div className="v2-gallery-head v2-fade">
           <span className="v2-eyebrow">Galería</span>
           <h2>Conoce <em>el lugar.</em></h2>
-          <p>Recorrido visual por las áreas verdes, senderos y amenidades de Privada Residencial San Andrés.</p>
+          <p>Recorrido visual por las áreas verdes, senderos y amenidades de Residencial San Andrés.</p>
         </div>
 
         {/* Featured aerial */}
         <div className="v2-gallery-hero v2-fade" onClick={() => openLightbox(0)}>
-          <img src="gallery-img-5.webp" alt="Vista aérea Privada Residencial San Andrés" />
+          <img src="gallery-img-5.webp" alt="Vista aérea Residencial San Andrés" />
           <div className="v2-gallery-hero-overlay">
             <span className="v2-gallery-hero-title">Vista aérea del fraccionamiento</span>
             <span className="v2-gallery-hero-tag">Tulancingo · Hgo.</span>
@@ -1575,7 +1575,7 @@ function V2NaturalOrganic({ tweaks }) {
             <img src="logo-farol.webp" alt="San Andrés" />
           </div>
           <div className="v2-brand-text">
-            <small>Privada Residencial</small>
+            <small>Residencial</small>
             <strong>San <em>Andrés</em></strong>
           </div>
         </div>
@@ -1585,7 +1585,7 @@ function V2NaturalOrganic({ tweaks }) {
           <a href="#lotes">Lotes</a>
           <a href="#galeria">Galería</a>
           <a href="#ubicacion">Ubicación</a>
-          <a href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Privada%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" className="v2-nav-cta" onClick={() => trackConv('whatsapp_click', { source: 'nav' })} data-comment-anchor="a12b8b33a7-a-719-11">Agendar visita →</a>
+          <a href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" className="v2-nav-cta" onClick={() => trackConv('whatsapp_click', { source: 'nav' })} data-comment-anchor="a12b8b33a7-a-719-11">Agendar visita →</a>
         </nav>
       </header>
 
@@ -1599,11 +1599,12 @@ function V2NaturalOrganic({ tweaks }) {
             <em>cerca de todo.</em>
           </h1>
           <p className="sub">
-            Terrenos residenciales desde 155 m² entre áreas verdes, con la seguridad
-            de una privada y la plusvalía que tu patrimonio merece.
+            Terrenos residenciales desde 155 m² entre áreas verdes, con vigilante
+            en caseta, circuito cerrado y pluma de acceso — y la plusvalía que tu
+            patrimonio merece.
           </p>
           <div className="v2-hero-ctas">
-            <a className="v2-btn v2-btn-primary" href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Privada%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero' })} data-comment-anchor="99be9e3b4c-a-700-13">Agendar visita →</a>
+            <a className="v2-btn v2-btn-primary" href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero' })} data-comment-anchor="99be9e3b4c-a-700-13">Agendar visita →</a>
             <a className="v2-btn v2-btn-ghost" href="#lotes">Ver lotes</a>
           </div>
           <div className="v2-hero-pills">
@@ -1622,7 +1623,7 @@ function V2NaturalOrganic({ tweaks }) {
               
             <img
                 src="gallery-img-4.webp"
-                alt="Pozo de cantera · Privada Residencial San Andrés"
+                alt="Pozo de cantera · Residencial San Andrés"
                 className="v2-hover-reveal" />
               
           </div>
@@ -1674,7 +1675,7 @@ function V2NaturalOrganic({ tweaks }) {
             ['⌘', 'Mobiliario urbano', 'Bancas, fuentes y arreglos paisajísticos.'],
             ['≡', 'Calles adoquinadas', 'Vialidades amplias y duraderas para circulación cómoda.'],
             ['⊟', 'Servicios ocultos', 'Agua, drenaje, electricidad y telecom bajo tierra.'],
-            ['⊕', 'Acceso controlado', 'Pluma vehicular con identificación de visitantes.'],
+            ['⊕', 'Acceso controlado', 'Pluma vehicular con tarjeta de acceso e identificación de visitantes.'],
             ['◈', 'Excelente ubicación', 'A minutos del centro de Tulancingo y autopista.'],
             ['❀', 'Plusvalía en aumento', 'Inversión segura en zona de alto crecimiento.']].
             map(([icon, title, desc], i) =>
@@ -1746,11 +1747,11 @@ function V2NaturalOrganic({ tweaks }) {
             src="https://www.google.com/maps?q=20.1152008,-98.4097635&z=19&output=embed"
             allowFullScreen="" loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title="Ubicación Privada Residencial San Andrés" />
+            title="Ubicación Residencial San Andrés" />
           <div className="v2-map-overlay">
             <div className="v2-map-overlay-ic">◉</div>
             <div>
-              <small>Privada Residencial</small>
+              <small>Residencial</small>
               <strong>San <em>Andrés</em></strong>
               <small style={{ marginTop: 4 }}>Carr. Tulancingo–Pachuca, Hgo.</small>
             </div>
@@ -1876,7 +1877,7 @@ function V2NaturalOrganic({ tweaks }) {
             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </a>
         </div>
-        <p>© 2026 Privada Residencial San Andrés · Tulancingo, Hidalgo</p>
+        <p>© 2026 Residencial San Andrés · Tulancingo, Hidalgo</p>
         <p style={{ marginTop: 4 }}>
           <button type="button" className="v2-footer-link" onClick={() => setPrivacyOpen(true)}>Aviso de Privacidad</button>
         </p>
@@ -1889,7 +1890,7 @@ function V2NaturalOrganic({ tweaks }) {
             <button type="button" className="v2-privacy-close" onClick={() => setPrivacyOpen(false)} aria-label="Cerrar">×</button>
             <h2>Aviso de <em>Privacidad</em></h2>
             <div className="v2-privacy-body">
-              <p><strong>Responsable.</strong> Privada Residencial San Andrés (en adelante, "el Responsable"), con domicilio en Carr. Tulancingo–Pachuca km 4.5, Col. Santa Alicia, Tulancingo, Hidalgo, C.P. 43700, es responsable del tratamiento y protección de sus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
+              <p><strong>Responsable.</strong> Residencial San Andrés (en adelante, "el Responsable"), con domicilio en Carr. Tulancingo–Pachuca km 4.5, Col. Santa Alicia, Tulancingo, Hidalgo, C.P. 43700, es responsable del tratamiento y protección de sus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
               <p><strong>Datos que recabamos.</strong> Nombre, teléfono, correo electrónico y el mensaje que usted nos proporcione a través del formulario de contacto.</p>
               <p><strong>Finalidades.</strong> Sus datos serán utilizados para: (i) atender su solicitud de información sobre los lotes y servicios del fraccionamiento; (ii) contactarle por teléfono, WhatsApp o correo electrónico; y (iii) darle seguimiento comercial. No usaremos sus datos para finalidades distintas sin su consentimiento.</p>
               <p><strong>Transferencias.</strong> No transferimos sus datos personales a terceros sin su consentimiento, salvo en los casos previstos por el artículo 37 de la LFPDPPP.</p>
@@ -1904,7 +1905,7 @@ function V2NaturalOrganic({ tweaks }) {
 
       {/* WhatsApp FAB */}
       <a
-        href="https://wa.me/527751612654?text=Hola%2C%20me%20interesa%20conocer%20los%20lotes%20disponibles%20en%20Privada%20Residencial%20San%20Andr%C3%A9s"
+        href="https://wa.me/527751612654?text=Hola%2C%20me%20interesa%20conocer%20los%20lotes%20disponibles%20en%20Residencial%20San%20Andr%C3%A9s"
         target="_blank"
         rel="noopener noreferrer"
         className="v2-wa-fab"
