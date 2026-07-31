@@ -13,6 +13,15 @@ const ADS_CONV = {
   form_submit: '',      // ej: 'XyZ-1_23AbCdEf'
 };
 
+// === Datos comerciales (actualizar aquí, se reflejan en todo el sitio) ===
+// Precio "desde" de lista vigente (NOM-247: debe respetarse).
+const PRECIO_DESDE = '510,000';
+// Lotes disponibles hoy en la etapa actual — actualizar cuando se venda uno.
+const LOTES_DISPONIBLES = '5';
+// Mensaje pre-llenado unificado para todos los links de WhatsApp.
+const WA_MSG = 'Hola, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?';
+const WA_URL = `https://wa.me/527751612654?text=${encodeURIComponent(WA_MSG)}`;
+
 // Dispara evento a GA4 siempre, y a Google Ads si hay label configurado.
 function trackConv(name, params = {}) {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') return;
@@ -1157,6 +1166,54 @@ function V2NaturalOrganic({ tweaks }) {
         .v2-btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid rgba(45,42,38,.2); }
         .v2-btn-ghost:hover { border-color: var(--ink); background: rgba(45,42,38,.04); }
 
+        /* HERO: precio + oferta */
+        .v2-hero-price {
+          display: flex; flex-direction: column; gap: 4px;
+          margin: 0 0 24px; ${heroLayout === 'center' ? 'align-items: center; text-align: center;' : ''}
+          animation: v2-rise 1s cubic-bezier(.2,.8,.2,1) .2s backwards;
+        }
+        .v2-hero-price strong {
+          font-family: var(--serif); font-size: 26px; line-height: 1.2;
+          color: var(--terracota); font-weight: 600;
+        }
+        .v2-hero-price-m2 { font-size: 17px; color: rgba(45,42,38,.65); font-family: var(--sans); font-weight: 600; }
+        .v2-hero-price-plan { font-size: 15px; font-weight: 700; color: var(--sage-dark); }
+        .v2-hero-price-fine { font-size: 11px; color: rgba(45,42,38,.5); line-height: 1.4; max-width: 440px; }
+
+        /* Sello de confianza legal */
+        .v2-trust-badge {
+          display: inline-flex; align-items: center; gap: 8px;
+          margin-top: 16px; padding: 9px 16px; border-radius: 100px;
+          background: rgba(94,111,85,.1); border: 1px solid rgba(94,111,85,.25);
+          font-size: 13px; font-weight: 600; color: var(--sage-dark);
+        }
+        .v2-trust-badge span { color: var(--terracota); font-weight: 700; }
+
+        /* TESTIMONIOS */
+        .v2-testimonials { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .v2-testimonial-card {
+          margin: 0; padding: 28px; border-radius: 24px;
+          background: rgba(255,255,255,.7); border: 1px solid rgba(122,139,111,.15);
+          display: flex; flex-direction: column; gap: 18px;
+        }
+        .v2-testimonial-card blockquote {
+          margin: 0; font-family: var(--serif); font-style: italic;
+          font-size: 16px; line-height: 1.6; color: rgba(45,42,38,.8);
+        }
+        .v2-testimonial-stars { color: var(--terracota); font-size: 15px; letter-spacing: 3px; }
+        .v2-testimonial-card figcaption { display: flex; align-items: center; gap: 12px; margin-top: auto; font-size: 12px; color: rgba(45,42,38,.55); }
+        .v2-testimonial-card figcaption img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+        .v2-testimonial-avatar {
+          width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+          background: var(--sage-dark); color: var(--cream);
+          display: inline-flex; align-items: center; justify-content: center;
+          font-family: var(--serif); font-size: 18px;
+        }
+        .v2-testimonial-card figcaption strong { font-size: 14px; color: var(--ink); }
+        @media (max-width: 980px) {
+          .v2-testimonials { grid-template-columns: 1fr; gap: 14px; }
+        }
+
         .v2-hero-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 36px; ${heroLayout === 'center' ? 'justify-content: center;' : ''} }
         .v2-pill {
           display: inline-flex; align-items: center; gap: 8px;
@@ -1263,6 +1320,10 @@ function V2NaturalOrganic({ tweaks }) {
           .v2-hero p.sub { font-size: 15px; }
           .v2-hero-ctas { flex-direction: column; align-items: stretch; }
           .v2-hero-ctas .v2-btn { text-align: center; justify-content: center; }
+          .v2-hero-price strong { font-size: 22px; }
+          .v2-hero-price-m2 { font-size: 14px; }
+          .v2-hero-price-plan { font-size: 14px; }
+          .v2-trust-badge { font-size: 12px; padding: 8px 14px; }
           .v2-hero-card-floating { display: none; }
           .v2-hero-badge-floating { bottom: 16px; right: 14px; padding: 8px 14px; font-size: 11px; }
           .v2-hero-pills { gap: 8px; }
@@ -1510,8 +1571,23 @@ function V2NaturalOrganic({ tweaks }) {
         }
         .v2-wa-fab:hover .v2-wa-fab-label { opacity: 1; transform: translateX(0); }
         @media (max-width: 640px) {
-          .v2-wa-fab { bottom: 20px; right: 16px; width: 54px; height: 54px; }
-          .v2-wa-fab-label { display: none; }
+          /* Móvil: FAB se convierte en barra inferior fija con etiqueta visible */
+          .v2-wa-fab {
+            bottom: 0; right: 0; left: 0;
+            width: auto; height: auto; border-radius: 0;
+            padding: 14px 18px calc(14px + env(safe-area-inset-bottom));
+            gap: 10px; flex-direction: row-reverse;
+            box-shadow: 0 -4px 24px rgba(0,0,0,.18);
+          }
+          .v2-wa-fab:hover { transform: none; }
+          .v2-wa-fab svg { width: 24px; height: 24px; flex-shrink: 0; }
+          .v2-wa-fab-label {
+            position: static; opacity: 1; transform: none;
+            background: transparent; color: white; box-shadow: none;
+            padding: 0; font-size: 15px; font-weight: 700;
+          }
+          /* Deja espacio para la barra fija al final de la página */
+          .v2-footer { padding-bottom: calc(60px + env(safe-area-inset-bottom)) !important; }
         }
 
         /* FOOTER */
@@ -1585,7 +1661,7 @@ function V2NaturalOrganic({ tweaks }) {
           <a href="#lotes">Lotes</a>
           <a href="#galeria">Galería</a>
           <a href="#ubicacion">Ubicación</a>
-          <a href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" className="v2-nav-cta" onClick={() => trackConv('whatsapp_click', { source: 'nav' })} data-comment-anchor="a12b8b33a7-a-719-11">Agendar visita →</a>
+          <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="v2-nav-cta" onClick={() => trackConv('whatsapp_click', { source: 'nav' })} data-comment-anchor="a12b8b33a7-a-719-11">Agendar visita →</a>
         </nav>
       </header>
 
@@ -1600,13 +1676,19 @@ function V2NaturalOrganic({ tweaks }) {
           </h1>
           <p className="sub">
             Terrenos residenciales desde 155 m² entre áreas verdes, con vigilante
-            en caseta, circuito cerrado y pluma de acceso — y la plusvalía que tu
-            patrimonio merece.
+            en caseta, circuito cerrado y pluma de acceso — en zona de plusvalía
+            en aumento.
           </p>
-          <div className="v2-hero-ctas">
-            <a className="v2-btn v2-btn-primary" href="https://wa.me/527751612654?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Residencial%20San%20Andr%C3%A9s" target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero' })} data-comment-anchor="99be9e3b4c-a-700-13">Agendar visita →</a>
-            <a className="v2-btn v2-btn-ghost" href="#lotes">Ver lotes</a>
+          <div className="v2-hero-price">
+            <strong>Lotes desde ${PRECIO_DESDE} MXN <span className="v2-hero-price-m2">· 155–200+ m²</span></strong>
+            <span className="v2-hero-price-plan">30% de enganche + 12 mensualidades sin intereses</span>
+            <small className="v2-hero-price-fine">Precio de lista vigente a julio 2026, sujeto a cambio sin previo aviso; no incluye gastos notariales ni impuestos.</small>
           </div>
+          <div className="v2-hero-ctas">
+            <a className="v2-btn v2-btn-primary" href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero_precio' })}>Pregunta precio y disponibilidad por WhatsApp</a>
+            <a className="v2-btn v2-btn-ghost" href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero' })} data-comment-anchor="99be9e3b4c-a-700-13">Agendar visita</a>
+          </div>
+          <div className="v2-trust-badge"><span aria-hidden="true">✓</span> Escrituración garantizada · título de propiedad</div>
           <div className="v2-hero-pills">
             <span className="v2-pill"><span className="v2-pill-dot" />Caseta 24/7</span>
             <span className="v2-pill"><span className="v2-pill-dot" />Calles adoquinadas</span>
@@ -1616,16 +1698,19 @@ function V2NaturalOrganic({ tweaks }) {
         </div>
         <div className="v2-hero-visual v2-fade">
           <div className="v2-hero-frame">
-            <video
+            {/* El video (6.4 MB) solo se monta en desktop; en móvil ni se descarga (antes se ocultaba con CSS pero se bajaba igual). */}
+            {typeof window !== 'undefined' && window.matchMedia('(min-width: 981px)').matches && (
+              <video
                 src="hero-video.mp4"
-                autoPlay muted loop playsInline
+                autoPlay muted loop playsInline preload="metadata"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, zIndex: 1 }} />
-              
+            )}
             <img
                 src="gallery-img-4.webp"
                 alt="Pozo de cantera · Residencial San Andrés"
+                fetchpriority="high"
                 className="v2-hover-reveal" />
-              
+
           </div>
           <div className="v2-hero-card-floating" data-comment-anchor="5dc4b1a697-div-782-11">
             <div className="v2-hero-card-icon">m²</div>
@@ -1634,7 +1719,7 @@ function V2NaturalOrganic({ tweaks }) {
               <small>Superficie desde</small>
             </div>
           </div>
-          <div className="v2-hero-badge-floating">Últimos lotes</div>
+          <div className="v2-hero-badge-floating">Solo quedan {LOTES_DISPONIBLES} lotes en esta etapa</div>
         </div>
         <div className="v2-scroll" data-comment-anchor="26d3d13839-div-788-9">
           <span>Descubrir</span>
@@ -1677,7 +1762,7 @@ function V2NaturalOrganic({ tweaks }) {
             ['⊟', 'Servicios ocultos', 'Agua, drenaje, electricidad y telecom bajo tierra.'],
             ['⊕', 'Acceso controlado', 'Pluma vehicular con tarjeta de acceso e identificación de visitantes.'],
             ['◈', 'Excelente ubicación', 'A minutos del centro de Tulancingo y autopista.'],
-            ['❀', 'Plusvalía en aumento', 'Inversión segura en zona de alto crecimiento.']].
+            ['❀', 'Plusvalía en aumento', 'Zona de alto crecimiento en Tulancingo.']].
             map(([icon, title, desc], i) =>
             <div key={i} className="v2-amenity-card">
               <div className="v2-amenity-icon">{icon}</div>
@@ -1695,11 +1780,11 @@ function V2NaturalOrganic({ tweaks }) {
         <div className="v2-lots-card" data-comment-anchor="41c2a55d58-div-808-9">
           <div className="v2-section-head" style={{ position: 'relative', zIndex: 1, marginBottom: 0 }}>
             <span className="v2-eyebrow">Plano maestro</span>
-            <h2>Etapa actual<br /><em>Últimos lotes</em></h2>
+            <h2>Etapa actual<br /><em>Solo quedan {LOTES_DISPONIBLES} lotes</em></h2>
             <p>Vendemos por etapas para garantizar la consolidación del fraccionamiento.</p>
           </div>
           <div className="v2-lots-stats">
-            <div className="v2-lots-stat"><strong>Últimos<sup></sup></strong><small>Lotes etapa actual</small></div>
+            <div className="v2-lots-stat"><strong>{LOTES_DISPONIBLES}<sup></sup></strong><small>Lotes disponibles hoy</small></div>
             <div className="v2-lots-stat"><strong>155<sup>m²</sup></strong><small>Superficie mínima</small></div>
             <div className="v2-lots-stat"><strong>200<sup>m²</sup></strong><small>Mayoría de los lotes</small></div>
           </div>
@@ -1725,10 +1810,39 @@ function V2NaturalOrganic({ tweaks }) {
               </React.Fragment>
             );
           })()}
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40, position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginTop: 40, position: 'relative', zIndex: 1 }}>
             <a className="v2-btn v2-btn-primary" href="#contacto">Solicitar últimos lotes →</a>
+            <div className="v2-trust-badge" style={{ marginTop: 0 }}><span aria-hidden="true">✓</span> Escrituración garantizada · título de propiedad</div>
           </div>
         </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIOS */}
+      <section className="v2-section" id="testimonios" style={{ paddingTop: 40 }}>
+        <div className="v2-fade">
+          <div className="v2-section-head">
+            <span className="v2-eyebrow">Opiniones</span>
+            <h2>Lo que dicen<br /><em>en Google.</em></h2>
+          </div>
+          {/* Reseñas reales tomadas de Google Maps, sin nombre por privacidad. */}
+          <div className="v2-testimonials">
+            {[
+              'Buen lugar para vivir y fuera del bullicio de la ciudad.',
+              'Con mucha plusvalía en tu inversión.',
+              'Excelente servicio de vigilancia y control de acceso al fraccionamiento.',
+              'Tranquilo, seguro y agradable lugar.',
+            ].map((texto, i) => (
+              <figure key={i} className="v2-testimonial-card">
+                <div className="v2-testimonial-stars" aria-label="5 estrellas">★★★★★</div>
+                <blockquote>"{texto}"</blockquote>
+                <figcaption>Reseña en Google Maps</figcaption>
+              </figure>
+            ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
+            <a className="v2-btn v2-btn-ghost" href="https://www.google.com/maps/search/Residencial+San+Andr%C3%A9s+Tulancingo" target="_blank" rel="noopener noreferrer">Ver reseñas en Google Maps →</a>
+          </div>
         </div>
       </section>
 
@@ -1826,7 +1940,7 @@ function V2NaturalOrganic({ tweaks }) {
                 <div style={{ fontSize: 48 }}>✓</div>
                 <h3 style={{ margin: 0 }}>¡Mensaje recibido!</h3>
                 <p style={{ color: 'var(--ink-soft)', margin: 0 }}>Un asesor te contactará pronto.</p>
-                <a href={`https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${fields.nombre || 'un interesado'}. Quiero información sobre los lotes.`)}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-ghost" style={{ marginTop: 8 }} onClick={() => trackConv('whatsapp_click', { source: 'post_form' })}>También escríbenos por WhatsApp →</a>
+                <a href={`https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${fields.nombre || 'un interesado'}, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?`)}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-ghost" style={{ marginTop: 8 }} onClick={() => trackConv('whatsapp_click', { source: 'post_form' })}>También escríbenos por WhatsApp →</a>
               </div>
             );
             return (
@@ -1873,7 +1987,7 @@ function V2NaturalOrganic({ tweaks }) {
           <a href="https://www.instagram.com/fraccionamiento.sanandres/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="none" stroke="currentColor" strokeWidth="2"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
           </a>
-          <a href="https://wa.me/527751612654" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" onClick={() => trackConv('whatsapp_click', { source: 'footer' })}>
+          <a href={WA_URL} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" onClick={() => trackConv('whatsapp_click', { source: 'footer' })}>
             <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </a>
         </div>
@@ -1905,7 +2019,7 @@ function V2NaturalOrganic({ tweaks }) {
 
       {/* WhatsApp FAB */}
       <a
-        href="https://wa.me/527751612654?text=Hola%2C%20me%20interesa%20conocer%20los%20lotes%20disponibles%20en%20Residencial%20San%20Andr%C3%A9s"
+        href={WA_URL}
         target="_blank"
         rel="noopener noreferrer"
         className="v2-wa-fab"
