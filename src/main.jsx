@@ -14,10 +14,10 @@ const ADS_CONV = {
 };
 
 // === Datos comerciales (actualizar aquí, se reflejan en todo el sitio) ===
-// 🔴 PLACEHOLDER: poner el precio "desde" real (NOM-247: debe ser precio de lista vigente).
-const PRECIO_DESDE = '[DEFINIR_PRECIO]';
-// 🔴 PLACEHOLDER: número real de lotes disponibles hoy en la etapa actual.
-const LOTES_DISPONIBLES = '[N_LOTES]';
+// Precio "desde" de lista vigente (NOM-247: debe respetarse).
+const PRECIO_DESDE = '510,000';
+// Lotes disponibles hoy en la etapa actual — actualizar cuando se venda uno.
+const LOTES_DISPONIBLES = '5';
 // Mensaje pre-llenado unificado para todos los links de WhatsApp.
 const WA_MSG = 'Hola, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?';
 const WA_URL = `https://wa.me/527751612654?text=${encodeURIComponent(WA_MSG)}`;
@@ -1190,7 +1190,7 @@ function V2NaturalOrganic({ tweaks }) {
         .v2-trust-badge span { color: var(--terracota); font-weight: 700; }
 
         /* TESTIMONIOS */
-        .v2-testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .v2-testimonials { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .v2-testimonial-card {
           margin: 0; padding: 28px; border-radius: 24px;
           background: rgba(255,255,255,.7); border: 1px solid rgba(122,139,111,.15);
@@ -1821,25 +1821,21 @@ function V2NaturalOrganic({ tweaks }) {
       <section className="v2-section" id="testimonios" style={{ paddingTop: 40 }}>
         <div className="v2-fade">
           <div className="v2-section-head">
-            <span className="v2-eyebrow">Testimonios</span>
-            <h2>Familias que ya<br /><em>invirtieron aquí.</em></h2>
+            <span className="v2-eyebrow">Por qué San Andrés</span>
+            <h2>Lo que más valoran<br /><em>quienes nos visitan.</em></h2>
           </div>
+          {/* Cuando haya testimonios reales (con permiso del cliente), convertir estas
+              tarjetas en <figure> con nombre y foto. No usar nombres inventados. */}
           <div className="v2-testimonials">
             {[
-              // 🔴 PLACEHOLDERS: reemplazar con testimonios reales (nombre, texto, foto opcional en public/)
-              { nombre: '[NOMBRE 1]', texto: '[TESTIMONIO 1 — ej. por qué eligieron San Andrés, experiencia de compra y escrituración]', foto: null },
-              { nombre: '[NOMBRE 2]', texto: '[TESTIMONIO 2]', foto: null },
-              { nombre: '[NOMBRE 3]', texto: '[TESTIMONIO 3]', foto: null },
-            ].map((t, i) => (
-              <figure key={i} className="v2-testimonial-card">
-                <blockquote>"{t.texto}"</blockquote>
-                <figcaption>
-                  {t.foto
-                    ? <img src={t.foto} alt={t.nombre} loading="lazy" />
-                    : <span className="v2-testimonial-avatar" aria-hidden="true">{t.nombre.replace('[', '').charAt(0)}</span>}
-                  <strong>{t.nombre}</strong>
-                </figcaption>
-              </figure>
+              'Buen lugar para vivir, fuera del bullicio de la ciudad.',
+              'Zona de plusvalía en aumento para tu inversión.',
+              'Excelente vigilancia y control de acceso al fraccionamiento.',
+              'Tranquilo, seguro y agradable para tu familia.',
+            ].map((texto, i) => (
+              <div key={i} className="v2-testimonial-card">
+                <blockquote>"{texto}"</blockquote>
+              </div>
             ))}
           </div>
         </div>
