@@ -1200,7 +1200,8 @@ function V2NaturalOrganic({ tweaks }) {
           margin: 0; font-family: var(--serif); font-style: italic;
           font-size: 16px; line-height: 1.6; color: rgba(45,42,38,.8);
         }
-        .v2-testimonial-card figcaption { display: flex; align-items: center; gap: 12px; margin-top: auto; }
+        .v2-testimonial-stars { color: var(--terracota); font-size: 15px; letter-spacing: 3px; }
+        .v2-testimonial-card figcaption { display: flex; align-items: center; gap: 12px; margin-top: auto; font-size: 12px; color: rgba(45,42,38,.55); }
         .v2-testimonial-card figcaption img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
         .v2-testimonial-avatar {
           width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
@@ -1821,22 +1822,26 @@ function V2NaturalOrganic({ tweaks }) {
       <section className="v2-section" id="testimonios" style={{ paddingTop: 40 }}>
         <div className="v2-fade">
           <div className="v2-section-head">
-            <span className="v2-eyebrow">Por qué San Andrés</span>
-            <h2>Lo que más valoran<br /><em>quienes nos visitan.</em></h2>
+            <span className="v2-eyebrow">Opiniones</span>
+            <h2>Lo que dicen<br /><em>en Google.</em></h2>
           </div>
-          {/* Cuando haya testimonios reales (con permiso del cliente), convertir estas
-              tarjetas en <figure> con nombre y foto. No usar nombres inventados. */}
+          {/* Reseñas reales tomadas de Google Maps, sin nombre por privacidad. */}
           <div className="v2-testimonials">
             {[
-              'Buen lugar para vivir, fuera del bullicio de la ciudad.',
-              'Zona de plusvalía en aumento para tu inversión.',
-              'Excelente vigilancia y control de acceso al fraccionamiento.',
-              'Tranquilo, seguro y agradable para tu familia.',
+              'Buen lugar para vivir y fuera del bullicio de la ciudad.',
+              'Con mucha plusvalía en tu inversión.',
+              'Excelente servicio de vigilancia y control de acceso al fraccionamiento.',
+              'Tranquilo, seguro y agradable lugar.',
             ].map((texto, i) => (
-              <div key={i} className="v2-testimonial-card">
+              <figure key={i} className="v2-testimonial-card">
+                <div className="v2-testimonial-stars" aria-label="5 estrellas">★★★★★</div>
                 <blockquote>"{texto}"</blockquote>
-              </div>
+                <figcaption>Reseña en Google Maps</figcaption>
+              </figure>
             ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
+            <a className="v2-btn v2-btn-ghost" href="https://www.google.com/maps/search/Residencial+San+Andr%C3%A9s+Tulancingo" target="_blank" rel="noopener noreferrer">Ver reseñas en Google Maps →</a>
           </div>
         </div>
       </section>
