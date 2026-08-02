@@ -14,8 +14,8 @@ const ADS_CONV = {
 };
 
 // === Datos comerciales (actualizar aquí, se reflejan en todo el sitio) ===
-// Precio "desde" de lista vigente (NOM-247: debe respetarse).
-const PRECIO_DESDE = '510,000';
+// Precio por m² de lista vigente en la etapa actual (NOM-247: debe respetarse).
+const PRECIO_M2 = '3,300';
 // Lotes disponibles hoy en la etapa actual — actualizar cuando se venda uno.
 const LOTES_DISPONIBLES = '5';
 // Mensaje pre-llenado unificado para todos los links de WhatsApp.
@@ -1680,9 +1680,9 @@ function V2NaturalOrganic({ tweaks }) {
             en aumento.
           </p>
           <div className="v2-hero-price">
-            <strong>Lotes desde ${PRECIO_DESDE} MXN <span className="v2-hero-price-m2">· 155–200+ m²</span></strong>
+            <strong>Desde ${PRECIO_M2} MXN por m² <span className="v2-hero-price-m2">· lotes de 155–200+ m²</span></strong>
             <span className="v2-hero-price-plan">30% de enganche + 12 mensualidades sin intereses</span>
-            <small className="v2-hero-price-fine">Precio de lista vigente a julio 2026, sujeto a cambio sin previo aviso; no incluye gastos notariales ni impuestos.</small>
+            <small className="v2-hero-price-fine">Precio por m² de la etapa actual, de lista vigente a agosto 2026, sujeto a cambio sin previo aviso; no incluye gastos notariales ni impuestos.</small>
           </div>
           <div className="v2-hero-ctas">
             <a className="v2-btn v2-btn-primary" href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero_precio' })}>Pregunta precio y disponibilidad por WhatsApp</a>
