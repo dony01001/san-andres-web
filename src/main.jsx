@@ -16,15 +16,10 @@ const ADS_CONV = {
 // === Datos comerciales (actualizar aquí, se reflejan en todo el sitio) ===
 // Precio por m² de lista vigente en la Etapa 3 (NOM-247: debe respetarse).
 const PRECIO_M2 = '3,300';
-// Lotes disponibles hoy en la Etapa 3 — actualizar cuando se venda uno.
-const LOTES_DISPONIBLES = 1;
-const LOTES_ETAPA3_TXT = LOTES_DISPONIBLES === 1
-  ? 'Queda 1 lote de la Etapa 3'
-  : `Quedan ${LOTES_DISPONIBLES} lotes de la Etapa 3`;
+// Escasez de la Etapa 3. Intencionalmente SIN número de lotes (se venden rápido).
+const LOTES_ETAPA3_TXT = 'Últimos lotes de la Etapa 3';
 // Etapa 4 — preventa.
 const ETAPA4 = {
-  lotes: 22,
-  desdeLote: 38,
   precioM2: '3,500',
   listos: 'Lista en unos días',
 };
@@ -39,7 +34,7 @@ const PROMO_BUENFIN = {
   formName: 'cupon-buenfin',
 };
 const promoBuenFinActiva = (now = Date.now()) => now >= PROMO_BUENFIN.inicio && now <= PROMO_BUENFIN.fin;
-const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de la Etapa 3 o de la Etapa 4 (preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026 o hasta agotar existencias (1 lote en Etapa 3 y 22 lotes en Etapa 4, a partir del lote 38). Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en Etapa 3 y $3,500 MXN por m² en Etapa 4, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
+const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de la Etapa 3 o de la Etapa 4 (preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026, sujeto a disponibilidad de lotes. Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en Etapa 3 y $3,500 MXN por m² en Etapa 4, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
 // Mensaje pre-llenado unificado para todos los links de WhatsApp.
 const WA_MSG = 'Hola, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?';
 const WA_URL = `https://wa.me/527751612654?text=${encodeURIComponent(WA_MSG)}`;
@@ -1884,21 +1879,19 @@ function V2NaturalOrganic({ tweaks }) {
         <div className="v2-lots-card" data-comment-anchor="41c2a55d58-div-808-9">
           <div className="v2-section-head" style={{ position: 'relative', zIndex: 1, marginBottom: 0 }}>
             <span className="v2-eyebrow">Plano maestro</span>
-            <h2>{LOTES_ETAPA3_TXT.replace(/ de la Etapa 3$/, '')}<br /><em>de la Etapa 3</em></h2>
+            <h2>Últimos lotes<br /><em>de la Etapa 3</em></h2>
             <p>Vendemos por etapas para garantizar la consolidación del fraccionamiento.</p>
           </div>
           <div className="v2-lots-stats">
-            <div className="v2-lots-stat"><strong>{LOTES_DISPONIBLES}<sup></sup></strong><small>{LOTES_DISPONIBLES === 1 ? 'Lote disponible' : 'Lotes disponibles'} en Etapa 3</small></div>
-            <div className="v2-lots-stat"><strong>{ETAPA4.lotes}<sup></sup></strong><small>Lotes nuevos en preventa · Etapa 4</small></div>
+            <div className="v2-lots-stat"><strong>${PRECIO_M2}<sup>m²</sup></strong><small>Etapa 3 · últimos lotes</small></div>
+            <div className="v2-lots-stat"><strong>${ETAPA4.precioM2}<sup>m²</sup></strong><small>Etapa 4 · preventa</small></div>
             <div className="v2-lots-stat"><strong>155<sup>m²</sup></strong><small>Superficie mínima</small></div>
             <div className="v2-lots-stat"><strong>200<sup>m²</sup></strong><small>Mayoría de los lotes</small></div>
           </div>
           <div className="v2-etapa4" id="etapa4">
             <span className="v2-etapa4-tag">Etapa 4 — Preventa</span>
-            <h3>{ETAPA4.lotes} lotes nuevos, <em>a partir del lote {ETAPA4.desdeLote}</em></h3>
+            <h3>Preventa · <em>${ETAPA4.precioM2} MXN por m²</em> · {ETAPA4.listos.toLowerCase()}</h3>
             <ul className="v2-etapa4-list">
-              <li><strong>${ETAPA4.precioM2} MXN por m²</strong> <span>(Etapa 3: ${PRECIO_M2} MXN por m²)</span></li>
-              <li>{ETAPA4.listos}</li>
               <li>Mismo plan: 30% de enganche + 12 mensualidades sin intereses</li>
             </ul>
             {promoActiva && (
@@ -2225,7 +2218,7 @@ function V2BuenFinBanner({ onCupon }) {
     <div className="v2-bf-banner" role="region" aria-label="Promoción Buen Fin">
       <div className="v2-bf-text">
         <strong>Buen Fin en San Andrés: <em>${PROMO_BUENFIN.descuento} de descuento</em> en tu lote</strong>
-        <small>Último lote de la Etapa 3 + preventa de la Etapa 4 · 30% de enganche + 12 meses sin intereses</small>
+        <small>Últimos lotes de la Etapa 3 + preventa de la Etapa 4 · 30% de enganche + 12 meses sin intereses</small>
       </div>
       <div className="v2-bf-count" aria-label={`Termina en ${d} días ${h} horas ${m} minutos`}>
         <span>{d}<small>días</small></span>
@@ -2322,7 +2315,7 @@ function V2CuponModal({ onClose, onPrivacy }) {
             <input type="hidden" name="form-name" value={PROMO_BUENFIN.formName} />
             <input name="bot-field" type="hidden" />
             <h3>Obtén tu cupón de <em>${PROMO_BUENFIN.descuento}</em></h3>
-            <p className="v2-cupon-lead">Regístrate y recibe tu código personal para el último lote de la Etapa 3 o la preventa de la Etapa 4. Válido hasta el 30 de noviembre.</p>
+            <p className="v2-cupon-lead">Regístrate y recibe tu código personal para los últimos lotes de la Etapa 3 o la preventa de la Etapa 4. Válido hasta el 30 de noviembre.</p>
             <div className="v2-field">
               <label htmlFor="bf-nombre">Nombre *</label>
               <input id="bf-nombre" type="text" name="nombre" autoComplete="name" value={fields.nombre} onChange={set('nombre')} placeholder="Tu nombre" required />
