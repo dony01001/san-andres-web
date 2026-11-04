@@ -97,6 +97,13 @@ Eventos en `src/main.jsx` vía helper `trackConv()` (manda a GA4 siempre, y a Go
 - `whatsapp_click` — nav, hero, footer, FAB, botón post-form (cada uno con `source` en params)
 - `form_submit` — al enviar el form de contacto con éxito
 
+### Promo Buen Fin 2026 + Brevo (nov-2026, branch `buenfin-2026`)
+- **Sitio:** banner + modal de cupón (form Netlify `cupon-buenfin`, hidden copy en `index.html`). Fechas en `PROMO_BUENFIN` al inicio de `src/main.jsx`; se oculta solo fuera del 1–30 nov 2026 (CDMX). Etapas: Etapa 3 (queda 1 lote, $3,300/m²) y Etapa 4 en preventa (22 lotes desde el 38, $3,500/m²).
+- **Función:** `netlify/functions/submission-created.js` — evento de Netlify que corre en cada envío verificado. Ignora todo form que no sea `cupon-buenfin`. Para el cupón: (1) crea/actualiza el contacto en **Brevo, lista #3** (atributos `NOMBRE`, `WHATSAPP`, `CODIGO`, `CANAL`, `updateEnabled: true`); (2) envía el correo de bienvenida con el código, botón de WhatsApp y letra chica. Siempre responde 200; errores solo van al log (Netlify → Functions → submission-created).
+- **Variables de entorno (Netlify):** `BREVO_API_KEY` (obligatoria; si falta, la función solo avisa en el log y el form sigue guardándose en Netlify) y `BREVO_SENDER_EMAIL` (opcional; default `sanandres.fraccionamiento@gmail.com`). El remitente **debe estar verificado en Brevo → Senders**.
+- **Atributos de Brevo (una sola vez):** `BREVO_API_KEY=... node scripts/brevo-setup.mjs` crea los atributos de texto (tolera "ya existe"). También se pueden crear a mano en Brevo → Contacts → Settings → Contact attributes.
+- **OJO al migrar a Cloudflare:** esta función depende de Netlify Forms; habría que reemplazarla junto con el form.
+
 ### 🟡 PENDIENTE (jun-2026): pegar labels de conversión de Google Ads
 Crear 2 acciones de conversión en Google Ads (Objetivos → Conversiones → Nueva acción, origen Sitio web) y pegar los labels en `ADS_CONV` al inicio de `src/main.jsx`:
 ```js
