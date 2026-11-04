@@ -14,19 +14,19 @@ const ADS_CONV = {
 };
 
 // === Datos comerciales (actualizar aquí, se reflejan en todo el sitio) ===
-// Precio por m² de lista vigente en la Etapa 1 (NOM-247: debe respetarse).
+// Precio por m² de lista vigente en la Etapa 3 (NOM-247: debe respetarse).
 const PRECIO_M2 = '3,300';
-// Lotes disponibles hoy en la Etapa 1 — actualizar cuando se venda uno.
+// Lotes disponibles hoy en la Etapa 3 — actualizar cuando se venda uno.
 const LOTES_DISPONIBLES = 1;
-const LOTES_ETAPA1_TXT = LOTES_DISPONIBLES === 1
-  ? 'Queda 1 lote de la Etapa 1'
-  : `Quedan ${LOTES_DISPONIBLES} lotes de la Etapa 1`;
-// Etapa 2 — preventa.
-const ETAPA2 = {
+const LOTES_ETAPA3_TXT = LOTES_DISPONIBLES === 1
+  ? 'Queda 1 lote de la Etapa 3'
+  : `Quedan ${LOTES_DISPONIBLES} lotes de la Etapa 3`;
+// Etapa 4 — preventa.
+const ETAPA4 = {
   lotes: 22,
   desdeLote: 38,
   precioM2: '3,500',
-  listos: 'finales de noviembre 2026',
+  listos: 'Lista en unos días',
 };
 
 // === Promo Buen Fin 2026 (cambiar fechas aquí) ===
@@ -39,7 +39,7 @@ const PROMO_BUENFIN = {
   formName: 'cupon-buenfin',
 };
 const promoBuenFinActiva = (now = Date.now()) => now >= PROMO_BUENFIN.inicio && now <= PROMO_BUENFIN.fin;
-const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de la Etapa 1 o de la Etapa 2 (preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026 o hasta agotar existencias (1 lote en Etapa 1 y 22 lotes en Etapa 2, a partir del lote 38). Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en Etapa 1 y $3,500 MXN por m² en Etapa 2, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
+const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de la Etapa 3 o de la Etapa 4 (preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026 o hasta agotar existencias (1 lote en Etapa 3 y 22 lotes en Etapa 4, a partir del lote 38). Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en Etapa 3 y $3,500 MXN por m² en Etapa 4, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
 // Mensaje pre-llenado unificado para todos los links de WhatsApp.
 const WA_MSG = 'Hola, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?';
 const WA_URL = `https://wa.me/527751612654?text=${encodeURIComponent(WA_MSG)}`;
@@ -1689,24 +1689,24 @@ function V2NaturalOrganic({ tweaks }) {
           .v2-bf-close { top: 6px; right: 6px; width: 32px; height: 32px; font-size: 18px; }
         }
 
-        /* ETAPA 2 — preventa (dentro de la tarjeta de lotes) */
-        .v2-etapa2 {
+        /* ETAPA 4 — preventa (dentro de la tarjeta de lotes) */
+        .v2-etapa4 {
           position: relative; z-index: 1; margin: 0 0 40px; padding: 28px;
           border-radius: 24px; background: rgba(255,255,255,.08); border: 1px solid rgba(224,164,135,.45);
         }
-        .v2-etapa2-tag { display: inline-block; background: var(--terracota); color: white; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 6px 12px; border-radius: 100px; }
-        .v2-etapa2 h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.2; color: var(--cream); margin: 14px 0 12px; }
-        .v2-etapa2 h3 em { font-style: italic; color: var(--terracota-soft); }
-        .v2-etapa2-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; color: rgba(246,240,230,.9); }
-        .v2-etapa2-list li::before { content: '✦'; color: var(--terracota-soft); margin-right: 8px; }
-        .v2-etapa2-list strong { color: var(--cream); }
-        .v2-etapa2-list span { font-size: 13px; opacity: .75; }
-        .v2-etapa2-btn { margin-top: 20px; }
+        .v2-etapa4-tag { display: inline-block; background: var(--terracota); color: white; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 6px 12px; border-radius: 100px; }
+        .v2-etapa4 h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.2; color: var(--cream); margin: 14px 0 12px; }
+        .v2-etapa4 h3 em { font-style: italic; color: var(--terracota-soft); }
+        .v2-etapa4-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; color: rgba(246,240,230,.9); }
+        .v2-etapa4-list li::before { content: '✦'; color: var(--terracota-soft); margin-right: 8px; }
+        .v2-etapa4-list strong { color: var(--cream); }
+        .v2-etapa4-list span { font-size: 13px; opacity: .75; }
+        .v2-etapa4-btn { margin-top: 20px; }
         @media (max-width: 720px) {
-          .v2-etapa2 { padding: 20px 16px; margin-bottom: 28px; border-radius: 18px; }
-          .v2-etapa2 h3 { font-size: 22px; }
-          .v2-etapa2-list { font-size: 14px; }
-          .v2-etapa2-btn { width: 100%; justify-content: center; text-align: center; }
+          .v2-etapa4 { padding: 20px 16px; margin-bottom: 28px; border-radius: 18px; }
+          .v2-etapa4 h3 { font-size: 22px; }
+          .v2-etapa4-list { font-size: 14px; }
+          .v2-etapa4-btn { width: 100%; justify-content: center; text-align: center; }
         }
 
         /* CUPÓN: modal */
@@ -1785,8 +1785,8 @@ function V2NaturalOrganic({ tweaks }) {
           <div className="v2-hero-price">
             <strong>Desde ${PRECIO_M2} MXN por m² <span className="v2-hero-price-m2">· lotes de 155–200+ m²</span></strong>
             <span className="v2-hero-price-plan">30% de enganche + 12 mensualidades sin intereses</span>
-            <span className="v2-hero-price-plan">Etapa 2 en preventa: ${ETAPA2.precioM2} MXN por m²</span>
-            <small className="v2-hero-price-fine">Precio por m² de lista vigente a noviembre 2026: ${PRECIO_M2} en Etapa 1 y ${ETAPA2.precioM2} en Etapa 2, sujeto a cambio sin previo aviso; no incluye gastos notariales ni impuestos.</small>
+            <span className="v2-hero-price-plan">Etapa 4 en preventa: ${ETAPA4.precioM2} MXN por m²</span>
+            <small className="v2-hero-price-fine">Precio por m² de lista vigente a noviembre 2026: ${PRECIO_M2} en Etapa 3 y ${ETAPA4.precioM2} en Etapa 4, sujeto a cambio sin previo aviso; no incluye gastos notariales ni impuestos.</small>
           </div>
           <div className="v2-hero-ctas">
             <a className="v2-btn v2-btn-primary" href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero_precio' })}>Pregunta precio y disponibilidad por WhatsApp</a>
@@ -1823,7 +1823,7 @@ function V2NaturalOrganic({ tweaks }) {
               <small>Superficie desde</small>
             </div>
           </div>
-          <div className="v2-hero-badge-floating">{LOTES_ETAPA1_TXT}</div>
+          <div className="v2-hero-badge-floating">{LOTES_ETAPA3_TXT}</div>
         </div>
         <div className="v2-scroll" data-comment-anchor="26d3d13839-div-788-9">
           <span>Descubrir</span>
@@ -1884,25 +1884,25 @@ function V2NaturalOrganic({ tweaks }) {
         <div className="v2-lots-card" data-comment-anchor="41c2a55d58-div-808-9">
           <div className="v2-section-head" style={{ position: 'relative', zIndex: 1, marginBottom: 0 }}>
             <span className="v2-eyebrow">Plano maestro</span>
-            <h2>{LOTES_ETAPA1_TXT.replace(/ de la Etapa 1$/, '')}<br /><em>de la Etapa 1</em></h2>
+            <h2>{LOTES_ETAPA3_TXT.replace(/ de la Etapa 3$/, '')}<br /><em>de la Etapa 3</em></h2>
             <p>Vendemos por etapas para garantizar la consolidación del fraccionamiento.</p>
           </div>
           <div className="v2-lots-stats">
-            <div className="v2-lots-stat"><strong>{LOTES_DISPONIBLES}<sup></sup></strong><small>{LOTES_DISPONIBLES === 1 ? 'Lote disponible' : 'Lotes disponibles'} en Etapa 1</small></div>
-            <div className="v2-lots-stat"><strong>{ETAPA2.lotes}<sup></sup></strong><small>Lotes nuevos en preventa · Etapa 2</small></div>
+            <div className="v2-lots-stat"><strong>{LOTES_DISPONIBLES}<sup></sup></strong><small>{LOTES_DISPONIBLES === 1 ? 'Lote disponible' : 'Lotes disponibles'} en Etapa 3</small></div>
+            <div className="v2-lots-stat"><strong>{ETAPA4.lotes}<sup></sup></strong><small>Lotes nuevos en preventa · Etapa 4</small></div>
             <div className="v2-lots-stat"><strong>155<sup>m²</sup></strong><small>Superficie mínima</small></div>
             <div className="v2-lots-stat"><strong>200<sup>m²</sup></strong><small>Mayoría de los lotes</small></div>
           </div>
-          <div className="v2-etapa2" id="etapa2">
-            <span className="v2-etapa2-tag">Etapa 2 — Preventa</span>
-            <h3>{ETAPA2.lotes} lotes nuevos, <em>a partir del lote {ETAPA2.desdeLote}</em></h3>
-            <ul className="v2-etapa2-list">
-              <li><strong>${ETAPA2.precioM2} MXN por m²</strong> <span>(Etapa 1: ${PRECIO_M2} MXN por m²)</span></li>
-              <li>Listos a {ETAPA2.listos}</li>
+          <div className="v2-etapa4" id="etapa4">
+            <span className="v2-etapa4-tag">Etapa 4 — Preventa</span>
+            <h3>{ETAPA4.lotes} lotes nuevos, <em>a partir del lote {ETAPA4.desdeLote}</em></h3>
+            <ul className="v2-etapa4-list">
+              <li><strong>${ETAPA4.precioM2} MXN por m²</strong> <span>(Etapa 3: ${PRECIO_M2} MXN por m²)</span></li>
+              <li>{ETAPA4.listos}</li>
               <li>Mismo plan: 30% de enganche + 12 mensualidades sin intereses</li>
             </ul>
             {promoActiva && (
-              <button type="button" className="v2-btn v2-btn-primary v2-etapa2-btn" onClick={() => setCuponOpen(true)}>
+              <button type="button" className="v2-btn v2-btn-primary v2-etapa4-btn" onClick={() => setCuponOpen(true)}>
                 Buen Fin: obtener mi cupón de ${PROMO_BUENFIN.descuento} →
               </button>
             )}
@@ -2037,6 +2037,7 @@ function V2NaturalOrganic({ tweaks }) {
             const [fields, setFields] = React.useState({ nombre: '', telefono: '', email: '', mensaje: '' });
             const [status, setStatus] = React.useState('idle'); // idle | sending | ok | error
             const [accepted, setAccepted] = React.useState(false);
+            const [sentName, setSentName] = React.useState(''); // nombre enviado, para el mensaje de WhatsApp post-form
             const set = k => e => setFields(f => ({ ...f, [k]: e.target.value }));
             const handleSubmit = async e => {
               e.preventDefault();
@@ -2050,7 +2051,7 @@ function V2NaturalOrganic({ tweaks }) {
                   'bot-field': '',
                 });
                 const res = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
-                if (res.ok) { trackConv('form_submit'); setStatus('ok'); setFields({ nombre: '', telefono: '', email: '', mensaje: '' }); }
+                if (res.ok) { trackConv('form_submit'); setSentName(fields.nombre.trim()); setStatus('ok'); setFields({ nombre: '', telefono: '', email: '', mensaje: '' }); }
                 else setStatus('error');
               } catch { setStatus('error'); }
             };
@@ -2059,7 +2060,7 @@ function V2NaturalOrganic({ tweaks }) {
                 <div style={{ fontSize: 48 }}>✓</div>
                 <h3 style={{ margin: 0 }}>¡Mensaje recibido!</h3>
                 <p style={{ color: 'var(--ink-soft)', margin: 0 }}>Un asesor te contactará pronto.</p>
-                <a href={`https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${fields.nombre || 'un interesado'}, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?`)}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-ghost" style={{ marginTop: 8 }} onClick={() => trackConv('whatsapp_click', { source: 'post_form' })}>También escríbenos por WhatsApp →</a>
+                <a href={`https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${sentName || 'un interesado'}, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?`)}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-ghost" style={{ marginTop: 8 }} onClick={() => trackConv('whatsapp_click', { source: 'post_form' })}>También escríbenos por WhatsApp →</a>
               </div>
             );
             return (
@@ -2224,7 +2225,7 @@ function V2BuenFinBanner({ onCupon }) {
     <div className="v2-bf-banner" role="region" aria-label="Promoción Buen Fin">
       <div className="v2-bf-text">
         <strong>Buen Fin en San Andrés: <em>${PROMO_BUENFIN.descuento} de descuento</em> en tu lote</strong>
-        <small>Último lote de la Etapa 1 + preventa de la Etapa 2 · 30% de enganche + 12 meses sin intereses</small>
+        <small>Último lote de la Etapa 3 + preventa de la Etapa 4 · 30% de enganche + 12 meses sin intereses</small>
       </div>
       <div className="v2-bf-count" aria-label={`Termina en ${d} días ${h} horas ${m} minutos`}>
         <span>{d}<small>días</small></span>
@@ -2321,7 +2322,7 @@ function V2CuponModal({ onClose, onPrivacy }) {
             <input type="hidden" name="form-name" value={PROMO_BUENFIN.formName} />
             <input name="bot-field" type="hidden" />
             <h3>Obtén tu cupón de <em>${PROMO_BUENFIN.descuento}</em></h3>
-            <p className="v2-cupon-lead">Regístrate y recibe tu código personal para el último lote de la Etapa 1 o la preventa de la Etapa 2. Válido hasta el 30 de noviembre.</p>
+            <p className="v2-cupon-lead">Regístrate y recibe tu código personal para el último lote de la Etapa 3 o la preventa de la Etapa 4. Válido hasta el 30 de noviembre.</p>
             <div className="v2-field">
               <label htmlFor="bf-nombre">Nombre *</label>
               <input id="bf-nombre" type="text" name="nombre" autoComplete="name" value={fields.nombre} onChange={set('nombre')} placeholder="Tu nombre" required />
