@@ -81,6 +81,36 @@ async function brevo(path, apiKey, body) {
   return res;
 }
 
+// Atributos de contacto de texto que usa la función. Se crean solos la primera
+// vez (una vez por instancia "caliente" de la función); si ya existen, Brevo
+// responde 400 "already exists" y se toma como éxito.
+const BREVO_ATTRS = ['NOMBRE', 'WHATSAPP', 'CODIGO', 'CANAL'];
+let attrsReady = false;
+
+async function ensureAttributes(apiKey) {
+  if (attrsReady) return;
+  let allOk = true;
+  for (const name of BREVO_ATTRS) {
+    try {
+      const res = await fetch(`${BREVO_API}/contacts/attributes/normal/${name}`, {
+        method: 'POST',
+        headers: { 'api-key': apiKey, 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ type: 'text' }),
+      });
+      if (res.ok) continue;
+      let detail = '';
+      try { detail = await res.text(); } catch {}
+      if (res.status === 400 && /already|exist|duplicate/i.test(detail)) continue;
+      allOk = false;
+      console.error(`[submission-created] No se pudo crear el atributo ${name} en Brevo: ${res.status} ${detail}`);
+    } catch (err) {
+      allOk = false;
+      console.error(`[submission-created] Error al crear el atributo ${name} en Brevo:`, err.message || err);
+    }
+  }
+  if (allOk) attrsReady = true; // si algo falló, se reintenta en el próximo envío
+}
+
 async function handler(event) {
   let payload;
   try {
@@ -109,6 +139,8 @@ async function handler(event) {
     return ok('no-email');
   }
 
+  await ensureAttributes(apiKey);
+
   try {
     await brevo('/contacts', apiKey, {
       email,
@@ -134,4 +166,7 @@ async function handler(event) {
   return ok('done');
 }
 
-module.exports = { handler, buildEmailHtml, waLink, PROMO_TERMINOS };
+module.exports = {
+  handler, buildEmailHtml, waLink, PROMO_TERMINOS,
+  _resetAttrsCache: () => { attrsReady = false; }, // solo para pruebas
+};
