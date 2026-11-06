@@ -9,7 +9,8 @@ if (!apiKey) {
   process.exit(1);
 }
 
-const ATTRS = ['NOMBRE', 'WHATSAPP', 'CODIGO', 'CANAL'];
+// WHATSAPP es atributo nativo de Brevo (tipo teléfono); no se crea.
+const ATTRS = ['NOMBRE', 'TELEFONO', 'CODIGO', 'CANAL'];
 let failed = 0;
 
 for (const name of ATTRS) {

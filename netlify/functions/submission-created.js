@@ -67,24 +67,38 @@ function buildEmailHtml({ nombre, codigo }) {
 </body></html>`;
 }
 
+// POST a Brevo. Nunca lanza por status HTTP: regresa { ok, status, text }
+// para poder registrar la respuesta completa de Brevo en los logs de Netlify.
 async function brevo(path, apiKey, body) {
   const res = await fetch(`${BREVO_API}${path}`, {
     method: 'POST',
     headers: { 'api-key': apiKey, 'content-type': 'application/json', accept: 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!res.ok) {
-    let detail = '';
-    try { detail = await res.text(); } catch {}
-    throw new Error(`Brevo ${path} respondió ${res.status}: ${detail}`);
-  }
-  return res;
+  let text = '';
+  try { text = await res.text(); } catch {}
+  return { ok: !!res.ok, status: res.status, text };
 }
+
+// Teléfono a 10 dígitos (MX) a partir de lo capturado.
+function telefono10(v) {
+  let d = String(v || '').replace(/\D/g, '');
+  if (d.length === 13 && d.startsWith('521')) d = d.slice(3);
+  else if (d.length === 12 && d.startsWith('52')) d = d.slice(2);
+  return d.length === 10 ? d : '';
+}
+// Formato E.164 para el campo nativo WHATSAPP de Brevo (tipo teléfono).
+const whatsappE164 = tel10 => (tel10 ? `+52${tel10}` : '');
+
+// Errores de Brevo que indican problema con el teléfono (campo WHATSAPP/SMS).
+const PHONE_ERROR_RE = /phone|whatsapp|sms|invalid/i;
 
 // Atributos de contacto de texto que usa la función. Se crean solos la primera
 // vez (una vez por instancia "caliente" de la función); si ya existen, Brevo
 // responde 400 "already exists" y se toma como éxito.
-const BREVO_ATTRS = ['NOMBRE', 'WHATSAPP', 'CODIGO', 'CANAL'];
+// OJO: WHATSAPP (y SMS) son atributos NATIVOS de Brevo de tipo teléfono (E.164);
+// no se crean aquí. El número en texto plano va en TELEFONO.
+const BREVO_ATTRS = ['NOMBRE', 'TELEFONO', 'CODIGO', 'CANAL'];
 let attrsReady = false;
 
 async function ensureAttributes(apiKey) {
@@ -131,7 +145,7 @@ async function handler(event) {
 
   const nombre = String(data.nombre || '').trim();
   const email = String(data.email || data.correo || '').trim();
-  const whatsapp = String(data.whatsapp || '').trim();
+  const tel10 = telefono10(data.whatsapp || data.telefono);
   const codigo = String(data.codigo || '').trim();
   const canal = String(data.canal || 'WEB').trim();
   if (!email) {
@@ -142,31 +156,41 @@ async function handler(event) {
   await ensureAttributes(apiKey);
 
   try {
-    await brevo('/contacts', apiKey, {
-      email,
-      attributes: { NOMBRE: nombre, WHATSAPP: whatsapp, CODIGO: codigo, CANAL: canal },
-      listIds: [BREVO_LIST_ID],
-      updateEnabled: true,
-    });
+    const attributes = { NOMBRE: nombre, TELEFONO: tel10 || String(data.whatsapp || '').trim(), CODIGO: codigo, CANAL: canal };
+    const wa = whatsappE164(tel10);
+    if (wa) attributes.WHATSAPP = wa;
+    const contact = attrs => ({ email, attributes: attrs, listIds: [BREVO_LIST_ID], updateEnabled: true });
+
+    let r = await brevo('/contacts', apiKey, contact(attributes));
+    if (!r.ok) {
+      console.error(`[submission-created] Brevo /contacts respondió ${r.status}: ${r.text}`);
+      if (r.status === 400 && attributes.WHATSAPP && PHONE_ERROR_RE.test(r.text)) {
+        const { WHATSAPP, ...sinWhatsapp } = attributes;
+        r = await brevo('/contacts', apiKey, contact(sinWhatsapp));
+        if (r.ok) console.warn('[submission-created] Contacto creado sin WHATSAPP (reintento); el número quedó en TELEFONO.');
+        else console.error(`[submission-created] Reintento sin WHATSAPP también falló: ${r.status}: ${r.text}`);
+      }
+    }
   } catch (err) {
-    console.error('[submission-created] Error al crear contacto en Brevo:', err.message || err);
+    console.error('[submission-created] Error de red al crear contacto en Brevo:', err.message || err);
   }
 
   try {
-    await brevo('/smtp/email', apiKey, {
+    const r = await brevo('/smtp/email', apiKey, {
       sender: { name: 'Residencial San Andrés', email: process.env.BREVO_SENDER_EMAIL || DEFAULT_SENDER },
       to: [{ email, name: nombre || undefined }],
       subject: `Tu cupón de $30,000 en Residencial San Andrés: ${codigo}`,
       htmlContent: buildEmailHtml({ nombre, codigo }),
     });
+    if (!r.ok) console.error(`[submission-created] Brevo /smtp/email respondió ${r.status}: ${r.text}`);
   } catch (err) {
-    console.error('[submission-created] Error al enviar correo con Brevo:', err.message || err);
+    console.error('[submission-created] Error de red al enviar correo con Brevo:', err.message || err);
   }
 
   return ok('done');
 }
 
 module.exports = {
-  handler, buildEmailHtml, waLink, PROMO_TERMINOS,
+  handler, buildEmailHtml, waLink, PROMO_TERMINOS, telefono10, whatsappE164,
   _resetAttrsCache: () => { attrsReady = false; }, // solo para pruebas
 };
