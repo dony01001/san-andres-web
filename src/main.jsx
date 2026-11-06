@@ -1667,26 +1667,38 @@ function V2NaturalOrganic({ tweaks }) {
         /* El aviso puede abrirse encima del cupón y de la barra de WhatsApp móvil */
         .v2-privacy-overlay { z-index: 10001; }
 
-        /* BUEN FIN: banner superior */
+        /* BUEN FIN: banner superior — estilo Black Friday (solo colores y texto; sin logo ni arte oficial de "El Buen Fin").
+           Contraste AA: acento #E4572E sobre #111 = 5.1:1; texto #111 sobre acento = 5.1:1; blanco sobre #111 = 18.9:1. */
         .v2-bf-banner {
-          position: relative; z-index: 20; background: var(--sage-dark); color: var(--cream);
+          --bf-bg: #111111; --bf-accent: #E4572E; --bf-accent-hover: #F06A43; --bf-ink: #111111;
+          position: relative; z-index: 20; background: var(--bf-bg); color: #fff;
+          border-bottom: 3px solid var(--bf-accent);
           padding: 14px 56px 14px 24px; display: flex; align-items: center; justify-content: center;
           gap: 8px 24px; flex-wrap: wrap; text-align: center;
         }
-        .v2-bf-text strong { display: block; font-family: var(--serif); font-weight: 600; font-size: 18px; line-height: 1.25; color: var(--cream); }
-        .v2-bf-text strong em { font-style: italic; color: var(--terracota-soft); }
-        .v2-bf-text small { display: block; font-size: 12px; line-height: 1.4; color: rgba(246,240,230,.8); margin-top: 2px; }
+        .v2-bf-tag {
+          display: inline-block; margin-bottom: 6px; padding: 3px 10px; border-radius: 4px;
+          background: var(--bf-accent); color: var(--bf-ink);
+          font-family: var(--sans); font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; line-height: 1.4;
+        }
+        .v2-bf-text strong { display: block; font-family: var(--sans); font-weight: 800; font-size: 19px; line-height: 1.2; letter-spacing: -.01em; color: #fff; }
+        .v2-bf-text strong em { font-style: normal; color: var(--bf-accent); }
+        .v2-bf-text small { display: block; font-size: 12px; line-height: 1.4; color: rgba(255,255,255,.82); margin-top: 3px; }
         .v2-bf-count { display: inline-flex; gap: 6px; font-variant-numeric: tabular-nums; }
-        .v2-bf-count span { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 10px; padding: 4px 8px; min-width: 44px; font-size: 15px; font-weight: 700; line-height: 1.1; }
-        .v2-bf-count small { display: block; font-size: 9px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+        .v2-bf-count span { background: var(--bf-accent); color: var(--bf-ink); border: none; border-radius: 8px; padding: 4px 8px; min-width: 44px; font-size: 16px; font-weight: 800; line-height: 1.1; }
+        .v2-bf-count small { display: block; font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
         .v2-bf-actions { display: flex; align-items: center; gap: 14px; }
         .v2-bf-actions .v2-btn { padding: 11px 20px; font-size: 13px; }
-        .v2-bf-terms-link { background: none; border: none; padding: 0; font: inherit; font-size: 12px; color: var(--cream); opacity: .85; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-        .v2-bf-close { position: absolute; top: 8px; right: 10px; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255,255,255,.1); color: var(--cream); font-size: 20px; line-height: 1; cursor: pointer; }
-        .v2-bf-terms { flex-basis: 100%; max-width: 760px; margin: 4px auto 0; text-align: left; font-size: 11px; line-height: 1.5; color: rgba(246,240,230,.85); background: rgba(0,0,0,.12); border-radius: 12px; padding: 10px 12px; }
+        .v2-bf-actions .v2-btn-primary { background: var(--bf-accent); color: var(--bf-ink); font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+        .v2-bf-actions .v2-btn-primary:hover { background: var(--bf-accent-hover); box-shadow: 0 10px 30px rgba(228,87,46,.35); }
+        .v2-bf-actions .v2-btn-primary:focus-visible, .v2-bf-terms-link:focus-visible, .v2-bf-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .v2-bf-terms-link { background: none; border: none; padding: 0; font: inherit; font-size: 12px; color: #fff; opacity: .9; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+        .v2-bf-close { position: absolute; top: 8px; right: 10px; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255,255,255,.12); color: #fff; font-size: 20px; line-height: 1; cursor: pointer; }
+        .v2-bf-terms { flex-basis: 100%; max-width: 760px; margin: 4px auto 0; text-align: left; font-size: 11px; line-height: 1.5; color: rgba(255,255,255,.85); background: rgba(255,255,255,.06); border-radius: 12px; padding: 10px 12px; }
         @media (max-width: 720px) {
           .v2-bf-banner { padding: 12px 48px 12px 16px; gap: 8px; }
-          .v2-bf-text strong { font-size: 15px; }
+          .v2-bf-tag { font-size: 10px; letter-spacing: .12em; margin-bottom: 5px; }
+          .v2-bf-text strong { font-size: 16px; }
           .v2-bf-text small { font-size: 11px; }
           .v2-bf-count span { min-width: 40px; font-size: 14px; padding: 3px 6px; }
           .v2-bf-actions { gap: 12px; }
@@ -1719,6 +1731,8 @@ function V2NaturalOrganic({ tweaks }) {
         .v2-cupon-overlay { z-index: 10000; }
         .v2-cupon-modal { padding: 32px 28px 28px; }
         .v2-cupon-modal .v2-form { padding: 0; box-shadow: none; background: transparent; }
+        /* La X debe quedar encima del form (el form tiene z-index: 1 y tapaba el botón de cerrar) */
+        .v2-cupon-modal .v2-privacy-close { z-index: 2; }
         .v2-cupon-modal .v2-form h3 { margin-bottom: 8px; }
         .v2-cupon-lead { font-size: 14px; line-height: 1.5; color: rgba(45,42,38,.75); margin: 0 0 18px; }
         .v2-cupon-err { color: #c0392b; font-size: 12px; margin: 6px 0 0; }
@@ -2234,6 +2248,7 @@ function V2BuenFinBanner({ onCupon }) {
   return (
     <div className="v2-bf-banner" role="region" aria-label="Promoción Buen Fin">
       <div className="v2-bf-text">
+        <span className="v2-bf-tag">Buen Fin · Black Friday</span>
         <strong>Buen Fin en San Andrés: <em>${PROMO_BUENFIN.descuento} de descuento</em> en tu lote</strong>
         <small>Calle Rancho Soyola: últimos lotes + nueva preventa · 30% de enganche + 12 meses sin intereses</small>
       </div>
