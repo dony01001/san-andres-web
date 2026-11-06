@@ -2187,14 +2187,19 @@ function canalDesdeUtm() {
   return 'WEB';
 }
 
-// Código BF30-XXXX sin caracteres ambiguos (sin 0/O/1/I).
-const CUPON_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-function generarCodigoCupon() {
-  const n = 4;
-  let vals;
-  try { vals = Array.from(crypto.getRandomValues(new Uint32Array(n))); }
-  catch { vals = Array.from({ length: n }, () => Math.floor(Math.random() * 2 ** 32)); }
-  return 'BF30-' + vals.map(v => CUPON_CHARS[v % CUPON_CHARS.length]).join('');
+// El código del cupón lo genera el servidor (mismo WhatsApp => mismo código).
+// Ver netlify/functions/cupon-codigo.js y netlify/lib/cupon.js.
+const CUPON_CODIGO_URL = '/.netlify/functions/cupon-codigo';
+async function pedirCodigoCupon(whatsapp) {
+  const res = await fetch(CUPON_CODIGO_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ whatsapp }),
+  });
+  if (!res.ok) throw new Error('cupon-codigo ' + res.status);
+  const data = await res.json();
+  if (!data || !/^BF30-[A-HJ-NP-Z2-9]{6}$/.test(String(data.codigo || ''))) throw new Error('codigo invalido');
+  return data.codigo;
 }
 
 function V2BuenFinBanner({ onCupon }) {
@@ -2244,7 +2249,7 @@ function V2BuenFinBanner({ onCupon }) {
 function V2CuponModal({ onClose, onPrivacy }) {
   const [fields, setFields] = React.useState({ nombre: '', whatsapp: '', email: '' });
   const [acepta, setAcepta] = React.useState(false);
-  const [status, setStatus] = React.useState('idle'); // idle | sending | ok | error
+  const [status, setStatus] = React.useState('idle'); // idle | sending | ok | error | code_error
   const [waError, setWaError] = React.useState('');
   const [result, setResult] = React.useState(null); // { nombre, codigo }
   const set = k => e => setFields(f => ({ ...f, [k]: e.target.value }));
@@ -2268,8 +2273,14 @@ function V2CuponModal({ onClose, onPrivacy }) {
     if (whatsapp.length !== 10) { setWaError('Escribe tu WhatsApp a 10 dígitos, ej. 775 123 4567.'); return; }
     setWaError('');
     if (!nombre || !fields.email.trim() || !acepta) return;
-    const codigo = generarCodigoCupon();
     setStatus('sending');
+    let codigo;
+    try {
+      codigo = await pedirCodigoCupon(whatsapp);
+    } catch {
+      setStatus('code_error');
+      return;
+    }
     try {
       const body = new URLSearchParams({
         'form-name': PROMO_BUENFIN.formName,
@@ -2321,7 +2332,7 @@ function V2CuponModal({ onClose, onPrivacy }) {
             <p className="v2-cupon-lead">Regístrate y recibe tu código personal para los últimos lotes de Calle Rancho Soyola o su nueva preventa. Válido hasta el 30 de noviembre.</p>
             <div className="v2-field">
               <label htmlFor="bf-nombre">Nombre *</label>
-              <input id="bf-nombre" type="text" name="nombre" autoComplete="name" value={fields.nombre} onChange={set('nombre')} placeholder="Tu nombre" required />
+              <input id="bf-nombre" type="text" name="nombre" autoComplete="name" maxLength={60} value={fields.nombre} onChange={set('nombre')} placeholder="Tu nombre" required />
             </div>
             <div className="v2-field">
               <label htmlFor="bf-wa">WhatsApp (10 dígitos) *</label>
@@ -2330,13 +2341,19 @@ function V2CuponModal({ onClose, onPrivacy }) {
             </div>
             <div className="v2-field">
               <label htmlFor="bf-email">Correo *</label>
-              <input id="bf-email" type="email" name="email" autoComplete="email" value={fields.email} onChange={set('email')} placeholder="tucorreo@gmail.com" required />
+              <input id="bf-email" type="email" name="email" autoComplete="email" maxLength={100} value={fields.email} onChange={set('email')} placeholder="tucorreo@gmail.com" required />
             </div>
             <label className="v2-consent">
               <input type="checkbox" name="acepta_promociones" checked={acepta} onChange={e => setAcepta(e.target.checked)} required />
               <span>Acepto recibir promociones de San Andrés por correo. Consulta el <button type="button" className="v2-link-btn" onClick={onPrivacy}>Aviso de Privacidad</button>.</span>
             </label>
             {status === 'error' && <p style={{ color: '#c0392b', fontSize: 13, margin: '0 0 8px' }}>Error al enviar. Intenta de nuevo o escríbenos por WhatsApp.</p>}
+            {status === 'code_error' && (
+              <div className="v2-cupon-code-error" role="alert">
+                <p style={{ color: '#c0392b', fontSize: 13, margin: '0 0 8px' }}>No pudimos generar tu cupón, intenta de nuevo o escríbenos por WhatsApp</p>
+                <a className="v2-btn v2-btn-ghost" href={WA_URL} target="_blank" rel="noopener noreferrer" style={{ width: '100%', justifyContent: 'center', marginBottom: 8 }} onClick={() => trackConv('whatsapp_click', { source: 'cupon_error' })}>Escríbenos por WhatsApp</a>
+              </div>
+            )}
             <button type="submit" className="v2-btn v2-btn-primary v2-form-btn" disabled={status === 'sending' || !acepta}>
               {status === 'sending' ? 'Generando…' : 'Obtener mi cupón →'}
             </button>
