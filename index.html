@@ -45,6 +45,19 @@
   <button type="submit">Enviar</button>
 </form>
 
+<!-- Hidden form for Netlify detection: cupón Buen Fin (React lo envía por POST urlencoded a "/") -->
+<form name="cupon-buenfin" netlify data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="cupon-buenfin" />
+  <input type="text" name="nombre" />
+  <input type="tel" name="whatsapp" />
+  <input type="email" name="email" />
+  <input type="checkbox" name="acepta_promociones" value="si" />
+  <input type="hidden" name="codigo" />
+  <input type="hidden" name="canal" />
+  <input name="bot-field" />
+  <button type="submit">Enviar</button>
+</form>
+
 <script type="module" src="/src/main.jsx"></script>
 
 <script type="application/ld+json">

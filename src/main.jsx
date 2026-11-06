@@ -14,10 +14,28 @@ const ADS_CONV = {
 };
 
 // === Datos comerciales (actualizar aquí, se reflejan en todo el sitio) ===
-// Precio por m² de lista vigente en la etapa actual (NOM-247: debe respetarse).
+// Precio por m² de lista vigente de los últimos lotes de Calle Rancho Soyola (NOM-247: debe respetarse).
 const PRECIO_M2 = '3,300';
-// Lotes disponibles hoy en la etapa actual — actualizar cuando se venda uno.
-const LOTES_DISPONIBLES = '5';
+// Escasez. Intencionalmente SIN número de lotes ni de etapa (se venden rápido y
+// cada calle tiene varias etapas): se nombra por calle.
+const ULTIMOS_LOTES_TXT = 'Calle Rancho Soyola: últimos lotes';
+// Nueva preventa de Calle Rancho Soyola.
+const PREVENTA_SOYOLA = {
+  precioM2: '3,500',
+  listos: 'Lista en unos días',
+};
+
+// === Promo Buen Fin 2026 (cambiar fechas aquí) ===
+// El banner, el cupón y todo texto de la promo solo se muestran entre inicio y fin
+// (hora de Ciudad de México, UTC-6). Fuera de ese rango se ocultan solos.
+const PROMO_BUENFIN = {
+  inicio: new Date('2026-11-01T00:00:00-06:00').getTime(),
+  fin: new Date('2026-11-30T23:59:59-06:00').getTime(),
+  descuento: '30,000',
+  formName: 'cupon-buenfin',
+};
+const promoBuenFinActiva = (now = Date.now()) => now >= PROMO_BUENFIN.inicio && now <= PROMO_BUENFIN.fin;
+const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de Calle Rancho Soyola (últimos lotes o nueva preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026, sujeto a disponibilidad de lotes. Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. No aplica en ventas realizadas a través de brokers o intermediarios externos. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en últimos lotes y $3,500 MXN por m² en nueva preventa, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
 // Mensaje pre-llenado unificado para todos los links de WhatsApp.
 const WA_MSG = 'Hola, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?';
 const WA_URL = `https://wa.me/527751612654?text=${encodeURIComponent(WA_MSG)}`;
@@ -763,6 +781,16 @@ function V2NaturalOrganic({ tweaks }) {
   const heroVisual = t.heroVisual || 'video';
 
   const [privacyOpen, setPrivacyOpen] = React.useState(false);
+
+  // Promo Buen Fin: se re-evalúa cada 30 s para ocultarse sola al terminar la vigencia.
+  const promoNow = useNow(30000);
+  const promoActiva = promoBuenFinActiva(promoNow);
+  const [cuponOpen, setCuponOpen] = React.useState(false);
+  React.useEffect(() => { guardarUtmSource(); }, []);
+  // Link directo al cupón: sanandresresidencial.com/#cupon
+  React.useEffect(() => {
+    if (promoBuenFinActiva() && window.location.hash === '#cupon') setCuponOpen(true);
+  }, []);
 
   // AUTO-CYCLE hero image over video every 5s (desktop only)
   React.useEffect(() => {
@@ -1627,7 +1655,79 @@ function V2NaturalOrganic({ tweaks }) {
         .v2-privacy-body a { color: var(--terracota); }
         .v2-privacy-close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 28px; line-height: 1; color: var(--ink); opacity: .6; cursor: pointer; }
         .v2-privacy-close:hover { opacity: 1; }
+        /* El aviso puede abrirse encima del cupón y de la barra de WhatsApp móvil */
+        .v2-privacy-overlay { z-index: 10001; }
+
+        /* BUEN FIN: banner superior */
+        .v2-bf-banner {
+          position: relative; z-index: 20; background: var(--sage-dark); color: var(--cream);
+          padding: 14px 56px 14px 24px; display: flex; align-items: center; justify-content: center;
+          gap: 8px 24px; flex-wrap: wrap; text-align: center;
+        }
+        .v2-bf-text strong { display: block; font-family: var(--serif); font-weight: 600; font-size: 18px; line-height: 1.25; color: var(--cream); }
+        .v2-bf-text strong em { font-style: italic; color: var(--terracota-soft); }
+        .v2-bf-text small { display: block; font-size: 12px; line-height: 1.4; color: rgba(246,240,230,.8); margin-top: 2px; }
+        .v2-bf-count { display: inline-flex; gap: 6px; font-variant-numeric: tabular-nums; }
+        .v2-bf-count span { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 10px; padding: 4px 8px; min-width: 44px; font-size: 15px; font-weight: 700; line-height: 1.1; }
+        .v2-bf-count small { display: block; font-size: 9px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+        .v2-bf-actions { display: flex; align-items: center; gap: 14px; }
+        .v2-bf-actions .v2-btn { padding: 11px 20px; font-size: 13px; }
+        .v2-bf-terms-link { background: none; border: none; padding: 0; font: inherit; font-size: 12px; color: var(--cream); opacity: .85; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+        .v2-bf-close { position: absolute; top: 8px; right: 10px; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255,255,255,.1); color: var(--cream); font-size: 20px; line-height: 1; cursor: pointer; }
+        .v2-bf-terms { flex-basis: 100%; max-width: 760px; margin: 4px auto 0; text-align: left; font-size: 11px; line-height: 1.5; color: rgba(246,240,230,.85); background: rgba(0,0,0,.12); border-radius: 12px; padding: 10px 12px; }
+        @media (max-width: 720px) {
+          .v2-bf-banner { padding: 12px 48px 12px 16px; gap: 8px; }
+          .v2-bf-text strong { font-size: 15px; }
+          .v2-bf-text small { font-size: 11px; }
+          .v2-bf-count span { min-width: 40px; font-size: 14px; padding: 3px 6px; }
+          .v2-bf-actions { gap: 12px; }
+          .v2-bf-actions .v2-btn { padding: 10px 16px; font-size: 12px; }
+          .v2-bf-close { top: 6px; right: 6px; width: 32px; height: 32px; font-size: 18px; }
+        }
+
+        /* NUEVA PREVENTA Calle Rancho Soyola (dentro de la tarjeta de lotes) */
+        .v2-preventa {
+          position: relative; z-index: 1; margin: 0 0 40px; padding: 28px;
+          border-radius: 24px; background: rgba(255,255,255,.08); border: 1px solid rgba(224,164,135,.45);
+        }
+        .v2-preventa-tag { display: inline-block; background: var(--terracota); color: white; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 6px 12px; border-radius: 100px; }
+        .v2-preventa h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.2; color: var(--cream); margin: 14px 0 12px; }
+        .v2-preventa h3 em { font-style: italic; color: var(--terracota-soft); }
+        .v2-preventa-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; color: rgba(246,240,230,.9); }
+        .v2-preventa-list li::before { content: '✦'; color: var(--terracota-soft); margin-right: 8px; }
+        .v2-preventa-list strong { color: var(--cream); }
+        .v2-preventa-list span { font-size: 13px; opacity: .75; }
+        .v2-preventa-btn { margin-top: 20px; }
+        .v2-nowrap { white-space: nowrap; }
+        @media (max-width: 720px) {
+          .v2-preventa { padding: 20px 16px; margin-bottom: 28px; border-radius: 18px; }
+          .v2-preventa h3 { font-size: 22px; }
+          .v2-preventa-list { font-size: 14px; }
+          .v2-preventa-btn { width: 100%; justify-content: center; text-align: center; }
+        }
+
+        /* CUPÓN: modal */
+        .v2-cupon-overlay { z-index: 10000; }
+        .v2-cupon-modal { padding: 32px 28px 28px; }
+        .v2-cupon-modal .v2-form { padding: 0; box-shadow: none; background: transparent; }
+        .v2-cupon-modal .v2-form h3 { margin-bottom: 8px; }
+        .v2-cupon-lead { font-size: 14px; line-height: 1.5; color: rgba(45,42,38,.75); margin: 0 0 18px; }
+        .v2-cupon-err { color: #c0392b; font-size: 12px; margin: 6px 0 0; }
+        .v2-cupon-terms { font-size: 11px; line-height: 1.5; color: rgba(45,42,38,.6); margin: 18px 0 0; padding-top: 14px; border-top: 1px solid rgba(45,42,38,.12); }
+        .v2-cupon-ok { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .v2-cupon-code {
+          font-family: var(--sans); font-weight: 800; font-size: 40px; letter-spacing: .08em; color: var(--terracota);
+          background: white; border: 2px dashed var(--terracota); border-radius: 18px; padding: 14px 22px; user-select: all;
+        }
+        .v2-cupon-ok p { margin: 0; font-size: 15px; font-weight: 600; color: var(--sage-dark); }
+        .v2-cupon-ok .v2-btn-wa { background: #25D366; color: white; width: 100%; justify-content: center; }
+        @media (max-width: 720px) {
+          .v2-cupon-modal { padding: 28px 18px 22px; border-radius: 20px; max-height: 88vh; }
+          .v2-cupon-code { font-size: 34px; padding: 12px 18px; }
+        }
       `}</style>
+
+      {promoActiva && <V2BuenFinBanner onCupon={() => setCuponOpen(true)} />}
 
       <div style={{ position: 'relative' }} data-comment-anchor="018848739f-div-650-7">
       {typeof V2TopoParallax === 'function' && showTopo &&
@@ -1682,7 +1782,8 @@ function V2NaturalOrganic({ tweaks }) {
           <div className="v2-hero-price">
             <strong>Desde ${PRECIO_M2} MXN por m² <span className="v2-hero-price-m2">· lotes de 155–200+ m²</span></strong>
             <span className="v2-hero-price-plan">30% de enganche + 12 mensualidades sin intereses</span>
-            <small className="v2-hero-price-fine">Precio por m² de la etapa actual, de lista vigente a agosto 2026, sujeto a cambio sin previo aviso; no incluye gastos notariales ni impuestos.</small>
+            <span className="v2-hero-price-plan">Nueva preventa en Calle Rancho Soyola: <span className="v2-nowrap">${PREVENTA_SOYOLA.precioM2} MXN por m²</span></span>
+            <small className="v2-hero-price-fine">Precio por m² de lista vigente a noviembre 2026: ${PRECIO_M2} en últimos lotes y ${PREVENTA_SOYOLA.precioM2} en nueva preventa de Calle Rancho Soyola, sujeto a cambio sin previo aviso; no incluye gastos notariales ni impuestos.</small>
           </div>
           <div className="v2-hero-ctas">
             <a className="v2-btn v2-btn-primary" href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero_precio' })}>Pregunta precio y disponibilidad por WhatsApp</a>
@@ -1719,7 +1820,7 @@ function V2NaturalOrganic({ tweaks }) {
               <small>Superficie desde</small>
             </div>
           </div>
-          <div className="v2-hero-badge-floating">Solo quedan {LOTES_DISPONIBLES} lotes en esta etapa</div>
+          <div className="v2-hero-badge-floating">{ULTIMOS_LOTES_TXT}</div>
         </div>
         <div className="v2-scroll" data-comment-anchor="26d3d13839-div-788-9">
           <span>Descubrir</span>
@@ -1780,13 +1881,27 @@ function V2NaturalOrganic({ tweaks }) {
         <div className="v2-lots-card" data-comment-anchor="41c2a55d58-div-808-9">
           <div className="v2-section-head" style={{ position: 'relative', zIndex: 1, marginBottom: 0 }}>
             <span className="v2-eyebrow">Plano maestro</span>
-            <h2>Etapa actual<br /><em>Solo quedan {LOTES_DISPONIBLES} lotes</em></h2>
+            <h2>Últimos lotes<br /><em>de Calle Rancho Soyola</em></h2>
             <p>Vendemos por etapas para garantizar la consolidación del fraccionamiento.</p>
           </div>
           <div className="v2-lots-stats">
-            <div className="v2-lots-stat"><strong>{LOTES_DISPONIBLES}<sup></sup></strong><small>Lotes disponibles hoy</small></div>
+            <div className="v2-lots-stat"><strong>${PRECIO_M2}<sup>m²</sup></strong><small>Calle Rancho Soyola<br />últimos lotes</small></div>
+            <div className="v2-lots-stat"><strong>${PREVENTA_SOYOLA.precioM2}<sup>m²</sup></strong><small>Calle Rancho Soyola<br />nueva preventa</small></div>
             <div className="v2-lots-stat"><strong>155<sup>m²</sup></strong><small>Superficie mínima</small></div>
             <div className="v2-lots-stat"><strong>200<sup>m²</sup></strong><small>Mayoría de los lotes</small></div>
+          </div>
+          <div className="v2-preventa" id="preventa">
+            <span className="v2-preventa-tag">Preventa</span>
+            <h3>Calle Rancho Soyola — <em>Nueva preventa</em></h3>
+            <ul className="v2-preventa-list">
+              <li><strong>${PREVENTA_SOYOLA.precioM2} MXN por m²</strong> · {PREVENTA_SOYOLA.listos.toLowerCase()}</li>
+              <li>Mismo plan: 30% de enganche + 12 mensualidades sin intereses</li>
+            </ul>
+            {promoActiva && (
+              <button type="button" className="v2-btn v2-btn-primary v2-preventa-btn" onClick={() => setCuponOpen(true)}>
+                Buen Fin: obtener mi cupón de ${PROMO_BUENFIN.descuento} →
+              </button>
+            )}
           </div>
           {(() => {
             const [planoOpen, setPlanoOpen] = React.useState(false);
@@ -1918,6 +2033,7 @@ function V2NaturalOrganic({ tweaks }) {
             const [fields, setFields] = React.useState({ nombre: '', telefono: '', email: '', mensaje: '' });
             const [status, setStatus] = React.useState('idle'); // idle | sending | ok | error
             const [accepted, setAccepted] = React.useState(false);
+            const [sentName, setSentName] = React.useState(''); // nombre enviado, para el mensaje de WhatsApp post-form
             const set = k => e => setFields(f => ({ ...f, [k]: e.target.value }));
             const handleSubmit = async e => {
               e.preventDefault();
@@ -1931,7 +2047,7 @@ function V2NaturalOrganic({ tweaks }) {
                   'bot-field': '',
                 });
                 const res = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
-                if (res.ok) { trackConv('form_submit'); setStatus('ok'); setFields({ nombre: '', telefono: '', email: '', mensaje: '' }); }
+                if (res.ok) { trackConv('form_submit'); setSentName(fields.nombre.trim()); setStatus('ok'); setFields({ nombre: '', telefono: '', email: '', mensaje: '' }); }
                 else setStatus('error');
               } catch { setStatus('error'); }
             };
@@ -1940,7 +2056,7 @@ function V2NaturalOrganic({ tweaks }) {
                 <div style={{ fontSize: 48 }}>✓</div>
                 <h3 style={{ margin: 0 }}>¡Mensaje recibido!</h3>
                 <p style={{ color: 'var(--ink-soft)', margin: 0 }}>Un asesor te contactará pronto.</p>
-                <a href={`https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${fields.nombre || 'un interesado'}, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?`)}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-ghost" style={{ marginTop: 8 }} onClick={() => trackConv('whatsapp_click', { source: 'post_form' })}>También escríbenos por WhatsApp →</a>
+                <a href={`https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${sentName || 'un interesado'}, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?`)}`} target="_blank" rel="noopener noreferrer" className="v2-btn v2-btn-ghost" style={{ marginTop: 8 }} onClick={() => trackConv('whatsapp_click', { source: 'post_form' })}>También escríbenos por WhatsApp →</a>
               </div>
             );
             return (
@@ -2017,6 +2133,11 @@ function V2NaturalOrganic({ tweaks }) {
         </div>
       )}
 
+      {/* MODAL: Cupón Buen Fin */}
+      {promoActiva && cuponOpen && (
+        <V2CuponModal onClose={() => setCuponOpen(false)} onPrivacy={() => setPrivacyOpen(true)} />
+      )}
+
       {/* WhatsApp FAB */}
       <a
         href={WA_URL}
@@ -2033,6 +2154,198 @@ function V2NaturalOrganic({ tweaks }) {
       </a>
     </div>);
 
+}
+
+// === Promo Buen Fin: helpers y componentes ===
+
+// Re-render periódico para countdown y auto-ocultar la promo al vencer.
+function useNow(intervalMs) {
+  const [now, setNow] = React.useState(() => Date.now());
+  React.useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), intervalMs);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+  return now;
+}
+
+// Guarda utm_source de la URL para que sobreviva a la navegación dentro de la sesión.
+const UTM_KEY = 'sa_utm_source';
+function guardarUtmSource() {
+  try {
+    const src = new URLSearchParams(window.location.search).get('utm_source');
+    if (src) sessionStorage.setItem(UTM_KEY, src);
+  } catch {}
+}
+function canalDesdeUtm() {
+  let src = '';
+  try { src = new URLSearchParams(window.location.search).get('utm_source') || ''; } catch {}
+  if (!src) { try { src = sessionStorage.getItem(UTM_KEY) || ''; } catch {} }
+  src = src.toLowerCase().trim();
+  if (src === 'facebook' || src === 'fb') return 'FB';
+  if (src === 'instagram' || src === 'ig') return 'IG';
+  if (src === 'google') return 'GA';
+  return 'WEB';
+}
+
+// Código BF30-XXXX sin caracteres ambiguos (sin 0/O/1/I).
+const CUPON_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function generarCodigoCupon() {
+  const n = 4;
+  let vals;
+  try { vals = Array.from(crypto.getRandomValues(new Uint32Array(n))); }
+  catch { vals = Array.from({ length: n }, () => Math.floor(Math.random() * 2 ** 32)); }
+  return 'BF30-' + vals.map(v => CUPON_CHARS[v % CUPON_CHARS.length]).join('');
+}
+
+function V2BuenFinBanner({ onCupon }) {
+  const DISMISS_KEY = 'sa_bf_banner_cerrado';
+  const [closed, setClosed] = React.useState(() => {
+    try { return sessionStorage.getItem(DISMISS_KEY) === '1'; } catch { return false; }
+  });
+  const [showTerms, setShowTerms] = React.useState(false);
+  const now = useNow(1000);
+  if (closed || !promoBuenFinActiva(now)) return null;
+
+  const diff = Math.max(0, PROMO_BUENFIN.fin - now);
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor(diff / 3600000) % 24;
+  const m = Math.floor(diff / 60000) % 60;
+  const s = Math.floor(diff / 1000) % 60;
+  const pad = v => String(v).padStart(2, '0');
+  const close = () => {
+    setClosed(true);
+    try { sessionStorage.setItem(DISMISS_KEY, '1'); } catch {}
+  };
+
+  return (
+    <div className="v2-bf-banner" role="region" aria-label="Promoción Buen Fin">
+      <div className="v2-bf-text">
+        <strong>Buen Fin en San Andrés: <em>${PROMO_BUENFIN.descuento} de descuento</em> en tu lote</strong>
+        <small>Calle Rancho Soyola: últimos lotes + nueva preventa · 30% de enganche + 12 meses sin intereses</small>
+      </div>
+      <div className="v2-bf-count" aria-label={`Termina en ${d} días ${h} horas ${m} minutos`}>
+        <span>{d}<small>días</small></span>
+        <span>{pad(h)}<small>hrs</small></span>
+        <span>{pad(m)}<small>min</small></span>
+        <span>{pad(s)}<small>seg</small></span>
+      </div>
+      <div className="v2-bf-actions">
+        <button type="button" className="v2-btn v2-btn-primary" onClick={onCupon}>Obtener mi cupón</button>
+        <button type="button" className="v2-bf-terms-link" onClick={() => setShowTerms(v => !v)} aria-expanded={showTerms}>
+          {showTerms ? 'Ocultar términos' : 'Ver términos'}
+        </button>
+      </div>
+      {showTerms && <p className="v2-bf-terms">{PROMO_TERMINOS}</p>}
+      <button type="button" className="v2-bf-close" onClick={close} aria-label="Cerrar promoción">×</button>
+    </div>
+  );
+}
+
+function V2CuponModal({ onClose, onPrivacy }) {
+  const [fields, setFields] = React.useState({ nombre: '', whatsapp: '', email: '' });
+  const [acepta, setAcepta] = React.useState(false);
+  const [status, setStatus] = React.useState('idle'); // idle | sending | ok | error
+  const [waError, setWaError] = React.useState('');
+  const [result, setResult] = React.useState(null); // { nombre, codigo }
+  const set = k => e => setFields(f => ({ ...f, [k]: e.target.value }));
+
+  React.useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const normalizaWa = v => {
+    let digits = (v || '').replace(/\D/g, '');
+    if (digits.length === 12 && digits.startsWith('52')) digits = digits.slice(2);
+    return digits;
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    const nombre = fields.nombre.trim();
+    const whatsapp = normalizaWa(fields.whatsapp);
+    if (whatsapp.length !== 10) { setWaError('Escribe tu WhatsApp a 10 dígitos, ej. 775 123 4567.'); return; }
+    setWaError('');
+    if (!nombre || !fields.email.trim() || !acepta) return;
+    const codigo = generarCodigoCupon();
+    setStatus('sending');
+    try {
+      const body = new URLSearchParams({
+        'form-name': PROMO_BUENFIN.formName,
+        nombre,
+        whatsapp,
+        email: fields.email.trim(),
+        acepta_promociones: 'si',
+        codigo,
+        canal: canalDesdeUtm(),
+        'bot-field': '',
+      });
+      const res = await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() });
+      if (res.ok) {
+        trackConv('form_submit', { source: 'cupon_buenfin' });
+        setResult({ nombre, codigo });
+        setStatus('ok');
+      } else setStatus('error');
+    } catch { setStatus('error'); }
+  };
+
+  const waHref = result
+    ? `https://wa.me/527751612654?text=${encodeURIComponent(`Hola, soy ${result.nombre}. Quiero aplicar mi cupón ${result.codigo} de $30,000 para un lote en San Andrés. ¿Me pasan disponibilidad?`)}`
+    : '#';
+
+  return (
+    <div className="v2-privacy-overlay v2-cupon-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Cupón Buen Fin">
+      <div className="v2-privacy-modal v2-cupon-modal" onClick={e => e.stopPropagation()}>
+        <button type="button" className="v2-privacy-close" onClick={onClose} aria-label="Cerrar">×</button>
+        {status === 'ok' && result ? (
+          <div className="v2-cupon-ok">
+            <h2 style={{ margin: 0 }}>¡Tu <em>cupón</em> está listo!</h2>
+            <div className="v2-cupon-code" data-testid="cupon-codigo">{result.codigo}</div>
+            <p>Tu cupón de $30,000 está activo hasta el 30 de noviembre</p>
+            <a
+              className="v2-btn v2-btn-wa"
+              href={waHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackConv('whatsapp_click', { source: 'cupon' })}
+            >Aplicar mi cupón por WhatsApp</a>
+            <small style={{ fontSize: 12, color: 'rgba(45,42,38,.6)' }}>Guarda tu código o tómale captura de pantalla.</small>
+            <p className="v2-cupon-terms" style={{ fontWeight: 400, color: 'rgba(45,42,38,.6)', fontSize: 11 }}>{PROMO_TERMINOS}</p>
+          </div>
+        ) : (
+          <form className="v2-form" name={PROMO_BUENFIN.formName} data-netlify="true" netlify-honeypot="bot-field" onSubmit={handleSubmit}>
+            <input type="hidden" name="form-name" value={PROMO_BUENFIN.formName} />
+            <input name="bot-field" type="hidden" />
+            <h3>Obtén tu cupón de <em>${PROMO_BUENFIN.descuento}</em></h3>
+            <p className="v2-cupon-lead">Regístrate y recibe tu código personal para los últimos lotes de Calle Rancho Soyola o su nueva preventa. Válido hasta el 30 de noviembre.</p>
+            <div className="v2-field">
+              <label htmlFor="bf-nombre">Nombre *</label>
+              <input id="bf-nombre" type="text" name="nombre" autoComplete="name" value={fields.nombre} onChange={set('nombre')} placeholder="Tu nombre" required />
+            </div>
+            <div className="v2-field">
+              <label htmlFor="bf-wa">WhatsApp (10 dígitos) *</label>
+              <input id="bf-wa" type="tel" name="whatsapp" inputMode="numeric" autoComplete="tel-national" value={fields.whatsapp} onChange={set('whatsapp')} placeholder="775 000 0000" required aria-invalid={!!waError} />
+              {waError && <p className="v2-cupon-err" role="alert">{waError}</p>}
+            </div>
+            <div className="v2-field">
+              <label htmlFor="bf-email">Correo *</label>
+              <input id="bf-email" type="email" name="email" autoComplete="email" value={fields.email} onChange={set('email')} placeholder="tucorreo@gmail.com" required />
+            </div>
+            <label className="v2-consent">
+              <input type="checkbox" name="acepta_promociones" checked={acepta} onChange={e => setAcepta(e.target.checked)} required />
+              <span>Acepto recibir promociones de San Andrés por correo. Consulta el <button type="button" className="v2-link-btn" onClick={onPrivacy}>Aviso de Privacidad</button>.</span>
+            </label>
+            {status === 'error' && <p style={{ color: '#c0392b', fontSize: 13, margin: '0 0 8px' }}>Error al enviar. Intenta de nuevo o escríbenos por WhatsApp.</p>}
+            <button type="submit" className="v2-btn v2-btn-primary v2-form-btn" disabled={status === 'sending' || !acepta}>
+              {status === 'sending' ? 'Generando…' : 'Obtener mi cupón →'}
+            </button>
+            <p className="v2-cupon-terms">{PROMO_TERMINOS}</p>
+          </form>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function V2Lantern({ size = 22 }) {

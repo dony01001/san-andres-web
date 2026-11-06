@@ -97,6 +97,13 @@ Eventos en `src/main.jsx` vía helper `trackConv()` (manda a GA4 siempre, y a Go
 - `whatsapp_click` — nav, hero, footer, FAB, botón post-form (cada uno con `source` en params)
 - `form_submit` — al enviar el form de contacto con éxito
 
+### Promo Buen Fin 2026 + Brevo (nov-2026, branch `buenfin-2026`)
+- **Sitio:** banner + modal de cupón (form Netlify `cupon-buenfin`, hidden copy en `index.html`). Fechas en `PROMO_BUENFIN` al inicio de `src/main.jsx`; se oculta solo fuera del 1–30 nov 2026 (CDMX). Lotes: "Calle Rancho Soyola: últimos lotes" ($3,300/m²) y "Calle Rancho Soyola: nueva preventa" ($3,500/m², lista en unos días). **No mostrar número de lotes ni número de etapa** ("Etapa 3/4" confunde: cada calle tiene varias etapas) en sitio, correo ni letra chica.
+- **Función:** `netlify/functions/submission-created.js` — evento de Netlify que corre en cada envío verificado. Ignora todo form que no sea `cupon-buenfin`. Para el cupón: (1) crea/actualiza el contacto en **Brevo, lista #3** (atributos `NOMBRE`, `WHATSAPP`, `CODIGO`, `CANAL`, `updateEnabled: true`); (2) envía el correo de bienvenida con el código, botón de WhatsApp y letra chica. Siempre responde 200; errores solo van al log (Netlify → Functions → submission-created).
+- **Variables de entorno (Netlify):** `BREVO_API_KEY` (obligatoria; si falta, la función solo avisa en el log y el form sigue guardándose en Netlify) y `BREVO_SENDER_EMAIL` (opcional; default `sanandres.fraccionamiento@gmail.com`). El remitente **debe estar verificado en Brevo → Senders**.
+- **Atributos de Brevo:** la función los crea sola (`NOMBRE`, `WHATSAPP`, `CODIGO`, `CANAL`, tipo texto) antes del primer alta, una vez por instancia; "ya existe" cuenta como éxito y si falla otra cosa igual intenta crear el contacto. La API key necesita permisos Contacts y Transactional email. Respaldo opcional: `BREVO_API_KEY=... node scripts/brevo-setup.mjs` o crearlos a mano en Brevo → Contacts → Settings → Contact attributes.
+- **OJO al migrar a Cloudflare:** esta función depende de Netlify Forms; habría que reemplazarla junto con el form.
+
 ### 🟡 PENDIENTE (jun-2026): pegar labels de conversión de Google Ads
 Crear 2 acciones de conversión en Google Ads (Objetivos → Conversiones → Nueva acción, origen Sitio web) y pegar los labels en `ADS_CONV` al inicio de `src/main.jsx`:
 ```js
