@@ -1363,7 +1363,11 @@ function V2NaturalOrganic({ tweaks }) {
           .v2-lots-card { padding: 28px 16px !important; border-radius: 24px !important; overflow: hidden; }
           .v2-lots-stats { grid-template-columns: 1fr 1fr !important; gap: 10px !important; margin: 24px 0 32px !important; }
           .v2-lots-stat { padding: 14px 12px !important; border-radius: 16px !important; overflow: hidden; }
-          .v2-lots-stat strong { font-size: 36px !important; line-height: 1 !important; word-break: break-all; }
+          /* Nunca partir el número (antes word-break: break-all partía "$3,300" en "$3,30 / 0"). */
+          .v2-lots-stat strong { font-size: 36px !important; line-height: 1 !important; white-space: nowrap; word-break: normal; }
+          /* Precios ($3,300 m²): la letra se ajusta al ancho de la tarjeta (2 columnas, 320–414 px) */
+          .v2-lots-stat--precio strong { font-size: clamp(20px, calc(13.5vw - 23px), 36px) !important; }
+          .v2-lots-stat--precio strong sup { font-size: .42em; }
           .v2-lots-stat small { font-size: 10px !important; margin-top: 6px !important; }
 
           /* CONTACTO: layout limpio sin overflow */
@@ -1476,6 +1480,11 @@ function V2NaturalOrganic({ tweaks }) {
         }
         .v2-lots-stat strong { display: block; font-family: var(--serif); font-size: 56px; color: var(--terracota-soft); line-height: 1; font-weight: 400; }
         .v2-lots-stat strong sup { font-size: 18px; vertical-align: top; margin-left: 2px; }
+        .v2-lots-stat--precio strong { white-space: nowrap; }
+        @media (max-width: 360px) {
+          /* Pantallas muy angostas: 155/200 m² un poco más chicos para no tocar el borde */
+          .v2-lots-stat:not(.v2-lots-stat--precio) strong { font-size: 32px !important; }
+        }
         .v2-lots-stat small { font-size: 12px; color: rgba(246,240,230,.7); display: block; margin-top: 12px; line-height: 1.4; }
 
         /* Plano lightbox */
@@ -1885,8 +1894,8 @@ function V2NaturalOrganic({ tweaks }) {
             <p>Vendemos por etapas para garantizar la consolidación del fraccionamiento.</p>
           </div>
           <div className="v2-lots-stats">
-            <div className="v2-lots-stat"><strong>${PRECIO_M2}<sup>m²</sup></strong><small>Calle Rancho Soyola<br />últimos lotes</small></div>
-            <div className="v2-lots-stat"><strong>${PREVENTA_SOYOLA.precioM2}<sup>m²</sup></strong><small>Calle Rancho Soyola<br />nueva preventa</small></div>
+            <div className="v2-lots-stat v2-lots-stat--precio"><strong>${PRECIO_M2}<sup>m²</sup></strong><small>Calle Rancho Soyola<br />últimos lotes</small></div>
+            <div className="v2-lots-stat v2-lots-stat--precio"><strong>${PREVENTA_SOYOLA.precioM2}<sup>m²</sup></strong><small>Calle Rancho Soyola<br />nueva preventa</small></div>
             <div className="v2-lots-stat"><strong>155<sup>m²</sup></strong><small>Superficie mínima</small></div>
             <div className="v2-lots-stat"><strong>200<sup>m²</sup></strong><small>Mayoría de los lotes</small></div>
           </div>
