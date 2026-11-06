@@ -8,6 +8,13 @@
 //   BREVO_SENDER_EMAIL  (opcional)    remitente verificado en Brevo → Senders
 //
 // Siempre responde 200 para no afectar el envío del formulario.
+//
+// Blindaje: solo procesa envíos dentro de la vigencia, con consentimiento, datos
+// válidos y con el código que deriva el servidor para ese WhatsApp (ver
+// netlify/lib/cupon.js). Si el correo o el WhatsApp ya tienen cupón en Brevo,
+// no se sobrescribe ni se envía otro correo.
+
+const { telefono10, codigoServidor, limpiaNombre, emailOk, enVigencia, canalOk } = require('../lib/cupon.js');
 
 const FORM_NAME = 'cupon-buenfin';
 const BREVO_LIST_ID = 3;
@@ -15,7 +22,7 @@ const BREVO_API = 'https://api.brevo.com/v3';
 const DEFAULT_SENDER = 'sanandres.fraccionamiento@gmail.com';
 const WA_NUMBER = '527751612654';
 
-const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de Calle Rancho Soyola (últimos lotes o nueva preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026, sujeto a disponibilidad de lotes. Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. No aplica en ventas realizadas a través de brokers o intermediarios externos. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en últimos lotes y $3,500 MXN por m² en nueva preventa, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
+const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de Calle Rancho Soyola (últimos lotes o nueva preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026, sujeto a disponibilidad de lotes. Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. No aplica en ventas realizadas a través de brokers o intermediarios externos. El cupón se respeta solo si a más tardar el 30 de noviembre de 2026 a las 23:59 (hora del centro de México) está pagado el enganche completo del 30% o el pago total de contado; un apartado o anticipo menor no conserva el cupón. La persona registrada debe ser titular o cotitular del contrato y declarar por escrito al firmar que no participa ningún asesor, broker o intermediario. No aplica a lotes apartados, negociados o contratados antes del 1 de noviembre de 2026. El descuento no es canjeable por dinero ni reembolsable; si el contrato se cancela, el descuento se pierde, y si el lote se cede o traspasa antes de liquidarse, el nuevo titular paga el precio sin descuento. Términos actualizados el 6 de noviembre de 2026; si un anuncio, mensaje o captura de pantalla dice algo distinto, valen estos términos. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en últimos lotes y $3,500 MXN por m² en nueva preventa, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
 
 const ok = (msg = 'ok') => ({ statusCode: 200, body: msg });
 
@@ -67,31 +74,23 @@ function buildEmailHtml({ nombre, codigo }) {
 </body></html>`;
 }
 
-// POST a Brevo. Nunca lanza por status HTTP: regresa { ok, status, text }
+// Llamada a Brevo. Nunca lanza por status HTTP: regresa { ok, status, text, json }
 // para poder registrar la respuesta completa de Brevo en los logs de Netlify.
-async function brevo(path, apiKey, body) {
-  const res = await fetch(`${BREVO_API}${path}`, {
-    method: 'POST',
-    headers: { 'api-key': apiKey, 'content-type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify(body),
-  });
+async function brevo(method, path, apiKey, body) {
+  const opts = { method, headers: { 'api-key': apiKey, accept: 'application/json' } };
+  if (body !== undefined) { opts.headers['content-type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  const res = await fetch(`${BREVO_API}${path}`, opts);
   let text = '';
   try { text = await res.text(); } catch {}
-  return { ok: !!res.ok, status: res.status, text };
+  let json = null;
+  try { json = text ? JSON.parse(text) : null; } catch {}
+  return { ok: !!res.ok, status: res.status, text, json };
 }
-
-// Teléfono a 10 dígitos (MX) a partir de lo capturado.
-function telefono10(v) {
-  let d = String(v || '').replace(/\D/g, '');
-  if (d.length === 13 && d.startsWith('521')) d = d.slice(3);
-  else if (d.length === 12 && d.startsWith('52')) d = d.slice(2);
-  return d.length === 10 ? d : '';
-}
-// Formato E.164 para el campo nativo WHATSAPP de Brevo (tipo teléfono).
-const whatsappE164 = tel10 => (tel10 ? `+52${tel10}` : '');
 
 // Errores de Brevo que indican problema con el teléfono (campo WHATSAPP/SMS).
 const PHONE_ERROR_RE = /phone|whatsapp|sms|invalid/i;
+// Contacto (correo) ya existente al crear con updateEnabled:false.
+const isDupContact = r => r.status === 400 && /duplicate_parameter|already exist/i.test(r.text) && !/whatsapp|sms|phone/i.test(r.text);
 
 // Atributos de contacto de texto que usa la función. Se crean solos la primera
 // vez (una vez por instancia "caliente" de la función); si ya existen, Brevo
@@ -106,17 +105,11 @@ async function ensureAttributes(apiKey) {
   let allOk = true;
   for (const name of BREVO_ATTRS) {
     try {
-      const res = await fetch(`${BREVO_API}/contacts/attributes/normal/${name}`, {
-        method: 'POST',
-        headers: { 'api-key': apiKey, 'content-type': 'application/json', accept: 'application/json' },
-        body: JSON.stringify({ type: 'text' }),
-      });
-      if (res.ok) continue;
-      let detail = '';
-      try { detail = await res.text(); } catch {}
-      if (res.status === 400 && /already|exist|duplicate/i.test(detail)) continue;
+      const r = await brevo('POST', `/contacts/attributes/normal/${name}`, apiKey, { type: 'text' });
+      if (r.ok) continue;
+      if (r.status === 400 && /already|exist|duplicate/i.test(r.text)) continue;
       allOk = false;
-      console.error(`[submission-created] No se pudo crear el atributo ${name} en Brevo: ${res.status} ${detail}`);
+      console.error(`[submission-created] No se pudo crear el atributo ${name} en Brevo: ${r.status} ${r.text}`);
     } catch (err) {
       allOk = false;
       console.error(`[submission-created] Error al crear el atributo ${name} en Brevo:`, err.message || err);
@@ -125,7 +118,53 @@ async function ensureAttributes(apiKey) {
   if (allOk) attrsReady = true; // si algo falló, se reintenta en el próximo envío
 }
 
+// Busca un contacto. Regresa el contacto, null si no existe (404) o
+// undefined si no se pudo saber (error de Brevo/red; queda en el log).
+async function buscaContacto(apiKey, identifier, identifierType) {
+  const qs = identifierType ? `?identifierType=${identifierType}` : '';
+  try {
+    const r = await brevo('GET', `/contacts/${encodeURIComponent(identifier)}${qs}`, apiKey);
+    if (r.ok) return r.json || {};
+    if (r.status === 404) return null;
+    console.error(`[submission-created] Brevo GET /contacts (${identifierType || 'email'}) respondió ${r.status}: ${r.text}`);
+  } catch (err) {
+    console.error('[submission-created] Error de red al buscar contacto en Brevo:', err.message || err);
+  }
+  return undefined;
+}
+const tieneCodigo = c => !!(c && c.attributes && String(c.attributes.CODIGO || '').trim());
+
+// Crea (POST, updateEnabled:false) o completa (PUT) el contacto, con reintento sin
+// WHATSAPP si Brevo rechaza el teléfono. Regresa 'ok' | 'duplicado' | 'error'.
+async function guardaContacto(apiKey, { email, attributes, existente }) {
+  const enviar = attrs => existente
+    ? brevo('PUT', `/contacts/${encodeURIComponent(email)}`, apiKey, { attributes: attrs, listIds: [BREVO_LIST_ID] })
+    : brevo('POST', '/contacts', apiKey, { email, attributes: attrs, listIds: [BREVO_LIST_ID], updateEnabled: false });
+  const ruta = existente ? 'PUT /contacts/{email}' : 'POST /contacts';
+  let r = await enviar(attributes);
+  if (r.ok) return 'ok';
+  console.error(`[submission-created] Brevo ${ruta} respondió ${r.status}: ${r.text}`);
+  if (!existente && isDupContact(r)) return 'duplicado';
+  if (r.status === 400 && attributes.WHATSAPP && PHONE_ERROR_RE.test(r.text)) {
+    const { WHATSAPP, ...sinWhatsapp } = attributes;
+    r = await enviar(sinWhatsapp);
+    if (r.ok) { console.warn('[submission-created] Contacto guardado sin WHATSAPP (reintento); el número quedó en TELEFONO.'); return 'ok'; }
+    console.error(`[submission-created] Reintento sin WHATSAPP también falló: ${r.status}: ${r.text}`);
+    if (!existente && isDupContact(r)) return 'duplicado';
+  }
+  return 'error';
+}
+
 async function handler(event) {
+  try {
+    return await procesa(event);
+  } catch (err) {
+    console.error('[submission-created] Error inesperado:', err && (err.stack || err.message || err));
+    return ok('error');
+  }
+}
+
+async function procesa(event) {
   let payload;
   try {
     payload = JSON.parse(event.body || '{}').payload || {};
@@ -137,48 +176,75 @@ async function handler(event) {
   const formName = payload.form_name || data['form-name'];
   if (formName !== FORM_NAME) return ok('ignored');
 
+  // 1) Vigencia según la fecha del envío registrada por Netlify.
+  const creado = payload.created_at ? Date.parse(payload.created_at) : Date.now();
+  if (!enVigencia(creado)) {
+    console.warn(`[submission-created] Envío fuera de vigencia (${payload.created_at || 'sin fecha'}); se ignora.`);
+    return ok('fuera-de-vigencia');
+  }
+
+  // 2) Consentimiento explícito.
+  if (data.acepta_promociones !== 'si') {
+    console.warn('[submission-created] Envío sin consentimiento de promociones; se ignora.');
+    return ok('sin-consentimiento');
+  }
+
+  // 3) Limpieza / validación de datos.
+  const nombre = limpiaNombre(data.nombre);
+  const email = String(data.email || data.correo || '').trim().toLowerCase();
+  const tel10 = telefono10(data.whatsapp);
+  if (!nombre || !emailOk(email) || !tel10) {
+    console.warn(`[submission-created] Datos inválidos (nombre:${!!nombre} email:${emailOk(email)} whatsapp:${!!tel10}); se ignora.`);
+    return ok('datos-invalidos');
+  }
+  const canal = canalOk(data.canal);
+
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
     console.warn('[submission-created] Falta BREVO_API_KEY: no se envía a Brevo (el formulario sí quedó guardado en Netlify).');
     return ok('no-key');
   }
 
-  const nombre = String(data.nombre || '').trim();
-  const email = String(data.email || data.correo || '').trim();
-  const tel10 = telefono10(data.whatsapp || data.telefono);
-  const codigo = String(data.codigo || '').trim();
-  const canal = String(data.canal || 'WEB').trim();
-  if (!email) {
-    console.warn('[submission-created] Envío sin correo; se ignora.');
-    return ok('no-email');
+  // 4) El código debe ser el que deriva el servidor para ese WhatsApp.
+  const codigo = codigoServidor(tel10);
+  if (!codigo || String(data.codigo || '').trim().toUpperCase() !== codigo) {
+    console.warn(`[submission-created] Código no coincide con el del servidor (recibido "${String(data.codigo || '').slice(0, 20)}"); se ignora.`);
+    return ok('codigo-invalido');
   }
 
   await ensureAttributes(apiKey);
 
-  try {
-    const attributes = { NOMBRE: nombre, TELEFONO: tel10 || String(data.whatsapp || '').trim(), CODIGO: codigo, CANAL: canal };
-    const wa = whatsappE164(tel10);
-    if (wa) attributes.WHATSAPP = wa;
-    const contact = attrs => ({ email, attributes: attrs, listIds: [BREVO_LIST_ID], updateEnabled: true });
-
-    let r = await brevo('/contacts', apiKey, contact(attributes));
-    if (!r.ok) {
-      console.error(`[submission-created] Brevo /contacts respondió ${r.status}: ${r.text}`);
-      if (r.status === 400 && attributes.WHATSAPP && PHONE_ERROR_RE.test(r.text)) {
-        const { WHATSAPP, ...sinWhatsapp } = attributes;
-        r = await brevo('/contacts', apiKey, contact(sinWhatsapp));
-        if (r.ok) console.warn('[submission-created] Contacto creado sin WHATSAPP (reintento); el número quedó en TELEFONO.');
-        else console.error(`[submission-created] Reintento sin WHATSAPP también falló: ${r.status}: ${r.text}`);
-      }
-    }
-  } catch (err) {
-    console.error('[submission-created] Error de red al crear contacto en Brevo:', err.message || err);
+  // 5) Duplicados: si ya hay contacto con cupón (por correo o por WhatsApp), no se toca ni se reenvía.
+  const porEmail = await buscaContacto(apiKey, email, 'email_id');
+  if (tieneCodigo(porEmail)) {
+    console.warn('[submission-created] El correo ya tiene cupón en Brevo; no se sobrescribe ni se reenvía.');
+    return ok('duplicado');
+  }
+  const wa = `+52${tel10}`;
+  const porWa = await buscaContacto(apiKey, wa, 'whatsapp_id');
+  if (tieneCodigo(porWa)) {
+    console.warn('[submission-created] El WhatsApp ya tiene cupón en Brevo; no se sobrescribe ni se reenvía.');
+    return ok('duplicado');
   }
 
+  // 6) Guardar contacto (nuevo con updateEnabled:false; si el correo ya existía SIN cupón, se completa).
+  const attributes = { NOMBRE: nombre, TELEFONO: tel10, CODIGO: codigo, CANAL: canal, WHATSAPP: wa };
+  let guardado = 'error';
   try {
-    const r = await brevo('/smtp/email', apiKey, {
+    guardado = await guardaContacto(apiKey, { email, attributes, existente: !!porEmail });
+  } catch (err) {
+    console.error('[submission-created] Error de red al guardar contacto en Brevo:', err.message || err);
+  }
+  if (guardado === 'duplicado') {
+    console.warn('[submission-created] Brevo indica que el contacto ya existe; no se envía otro correo.');
+    return ok('duplicado');
+  }
+
+  // 7) Correo de bienvenida solo con datos limpios y el código del servidor.
+  try {
+    const r = await brevo('POST', '/smtp/email', apiKey, {
       sender: { name: 'Residencial San Andrés', email: process.env.BREVO_SENDER_EMAIL || DEFAULT_SENDER },
-      to: [{ email, name: nombre || undefined }],
+      to: [{ email, name: nombre }],
       subject: `Tu cupón de $30,000 en Residencial San Andrés: ${codigo}`,
       htmlContent: buildEmailHtml({ nombre, codigo }),
     });
@@ -191,6 +257,6 @@ async function handler(event) {
 }
 
 module.exports = {
-  handler, buildEmailHtml, waLink, PROMO_TERMINOS, telefono10, whatsappE164,
+  handler, buildEmailHtml, waLink, PROMO_TERMINOS,
   _resetAttrsCache: () => { attrsReady = false; }, // solo para pruebas
 };
