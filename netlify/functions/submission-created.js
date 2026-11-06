@@ -15,7 +15,7 @@ const BREVO_API = 'https://api.brevo.com/v3';
 const DEFAULT_SENDER = 'sanandres.fraccionamiento@gmail.com';
 const WA_NUMBER = '527751612654';
 
-const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de la Etapa 3 o de la Etapa 4 (preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026, sujeto a disponibilidad de lotes. Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en Etapa 3 y $3,500 MXN por m² en Etapa 4, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
+const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de Calle Soyola (últimos lotes o nueva preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026, sujeto a disponibilidad de lotes. Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en últimos lotes y $3,500 MXN por m² en nueva preventa, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
 
 const ok = (msg = 'ok') => ({ statusCode: 200, body: msg });
 
@@ -55,7 +55,7 @@ function buildEmailHtml({ nombre, codigo }) {
           <a href="${href}" target="_blank" style="display:inline-block;background:#25D366;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:14px 26px;border-radius:100px;">Aplicar mi cupón por WhatsApp</a>
         </td></tr>
         <tr><td style="padding:0 24px 16px;font-size:15px;line-height:1.6;">
-          <p style="margin:0;">Quedan los <strong>últimos lotes de la Etapa 3</strong> ($3,300 MXN por m²) y está en preventa la <strong>Etapa 4</strong> a <strong>$3,500 MXN por m²</strong>, lista en unos días. Plan de 30% de enganche + 12 mensualidades sin intereses.</p>
+          <p style="margin:0;">Quedan los <strong>últimos lotes de Calle Soyola</strong> ($3,300 MXN por m²) y abrimos su <strong>nueva preventa</strong> a <strong>$3,500 MXN por m²</strong>, lista en unos días. Plan de 30% de enganche + 12 mensualidades sin intereses.</p>
         </td></tr>
         <tr><td style="padding:0 24px 24px;">
           <p style="margin:0;padding-top:14px;border-top:1px solid #ede5d5;font-size:11px;line-height:1.5;color:#6b6660;">${escapeHtml(PROMO_TERMINOS)}</p>

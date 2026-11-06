@@ -14,12 +14,13 @@ const ADS_CONV = {
 };
 
 // === Datos comerciales (actualizar aquí, se reflejan en todo el sitio) ===
-// Precio por m² de lista vigente en la Etapa 3 (NOM-247: debe respetarse).
+// Precio por m² de lista vigente de los últimos lotes de Calle Soyola (NOM-247: debe respetarse).
 const PRECIO_M2 = '3,300';
-// Escasez de la Etapa 3. Intencionalmente SIN número de lotes (se venden rápido).
-const LOTES_ETAPA3_TXT = 'Últimos lotes de la Etapa 3';
-// Etapa 4 — preventa.
-const ETAPA4 = {
+// Escasez. Intencionalmente SIN número de lotes ni de etapa (se venden rápido y
+// cada calle tiene varias etapas): se nombra por calle.
+const ULTIMOS_LOTES_TXT = 'Calle Soyola: últimos lotes';
+// Nueva preventa de Calle Soyola.
+const PREVENTA_SOYOLA = {
   precioM2: '3,500',
   listos: 'Lista en unos días',
 };
@@ -34,7 +35,7 @@ const PROMO_BUENFIN = {
   formName: 'cupon-buenfin',
 };
 const promoBuenFinActiva = (now = Date.now()) => now >= PROMO_BUENFIN.inicio && now <= PROMO_BUENFIN.fin;
-const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de la Etapa 3 o de la Etapa 4 (preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026, sujeto a disponibilidad de lotes. Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en Etapa 3 y $3,500 MXN por m² en Etapa 4, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
+const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN sobre el precio de lista de un lote de Calle Soyola (últimos lotes o nueva preventa) de Residencial San Andrés. Vigencia del 1 al 30 de noviembre de 2026, sujeto a disponibilidad de lotes. Para hacerlo válido, el enganche debe pagarse dentro de la vigencia. Aplica con el plan de 30% de enganche y 12 mensualidades sin intereses, o con pago de contado. Un cupón por lote. Cupón personal e intransferible: se obtiene registrándose en sanandresresidencial.com y solo es válido para la persona registrada con ese código. No acumulable con otras promociones, descuentos o negociaciones. Precio de lista vigente a noviembre de 2026: $3,300 MXN por m² en últimos lotes y $3,500 MXN por m² en nueva preventa, sujeto a cambio sin previo aviso fuera de la vigencia de la promoción. No incluye gastos notariales, impuestos ni derechos de escrituración. Informes: WhatsApp 775 161 2654.';
 // Mensaje pre-llenado unificado para todos los links de WhatsApp.
 const WA_MSG = 'Hola, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?';
 const WA_URL = `https://wa.me/527751612654?text=${encodeURIComponent(WA_MSG)}`;
@@ -1684,24 +1685,24 @@ function V2NaturalOrganic({ tweaks }) {
           .v2-bf-close { top: 6px; right: 6px; width: 32px; height: 32px; font-size: 18px; }
         }
 
-        /* ETAPA 4 — preventa (dentro de la tarjeta de lotes) */
-        .v2-etapa4 {
+        /* NUEVA PREVENTA Calle Soyola (dentro de la tarjeta de lotes) */
+        .v2-preventa {
           position: relative; z-index: 1; margin: 0 0 40px; padding: 28px;
           border-radius: 24px; background: rgba(255,255,255,.08); border: 1px solid rgba(224,164,135,.45);
         }
-        .v2-etapa4-tag { display: inline-block; background: var(--terracota); color: white; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 6px 12px; border-radius: 100px; }
-        .v2-etapa4 h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.2; color: var(--cream); margin: 14px 0 12px; }
-        .v2-etapa4 h3 em { font-style: italic; color: var(--terracota-soft); }
-        .v2-etapa4-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; color: rgba(246,240,230,.9); }
-        .v2-etapa4-list li::before { content: '✦'; color: var(--terracota-soft); margin-right: 8px; }
-        .v2-etapa4-list strong { color: var(--cream); }
-        .v2-etapa4-list span { font-size: 13px; opacity: .75; }
-        .v2-etapa4-btn { margin-top: 20px; }
+        .v2-preventa-tag { display: inline-block; background: var(--terracota); color: white; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 6px 12px; border-radius: 100px; }
+        .v2-preventa h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.2; color: var(--cream); margin: 14px 0 12px; }
+        .v2-preventa h3 em { font-style: italic; color: var(--terracota-soft); }
+        .v2-preventa-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 15px; color: rgba(246,240,230,.9); }
+        .v2-preventa-list li::before { content: '✦'; color: var(--terracota-soft); margin-right: 8px; }
+        .v2-preventa-list strong { color: var(--cream); }
+        .v2-preventa-list span { font-size: 13px; opacity: .75; }
+        .v2-preventa-btn { margin-top: 20px; }
         @media (max-width: 720px) {
-          .v2-etapa4 { padding: 20px 16px; margin-bottom: 28px; border-radius: 18px; }
-          .v2-etapa4 h3 { font-size: 22px; }
-          .v2-etapa4-list { font-size: 14px; }
-          .v2-etapa4-btn { width: 100%; justify-content: center; text-align: center; }
+          .v2-preventa { padding: 20px 16px; margin-bottom: 28px; border-radius: 18px; }
+          .v2-preventa h3 { font-size: 22px; }
+          .v2-preventa-list { font-size: 14px; }
+          .v2-preventa-btn { width: 100%; justify-content: center; text-align: center; }
         }
 
         /* CUPÓN: modal */
@@ -1780,8 +1781,8 @@ function V2NaturalOrganic({ tweaks }) {
           <div className="v2-hero-price">
             <strong>Desde ${PRECIO_M2} MXN por m² <span className="v2-hero-price-m2">· lotes de 155–200+ m²</span></strong>
             <span className="v2-hero-price-plan">30% de enganche + 12 mensualidades sin intereses</span>
-            <span className="v2-hero-price-plan">Etapa 4 en preventa: ${ETAPA4.precioM2} MXN por m²</span>
-            <small className="v2-hero-price-fine">Precio por m² de lista vigente a noviembre 2026: ${PRECIO_M2} en Etapa 3 y ${ETAPA4.precioM2} en Etapa 4, sujeto a cambio sin previo aviso; no incluye gastos notariales ni impuestos.</small>
+            <span className="v2-hero-price-plan">Nueva preventa en Calle Soyola: ${PREVENTA_SOYOLA.precioM2} MXN por m²</span>
+            <small className="v2-hero-price-fine">Precio por m² de lista vigente a noviembre 2026: ${PRECIO_M2} en últimos lotes y ${PREVENTA_SOYOLA.precioM2} en nueva preventa de Calle Soyola, sujeto a cambio sin previo aviso; no incluye gastos notariales ni impuestos.</small>
           </div>
           <div className="v2-hero-ctas">
             <a className="v2-btn v2-btn-primary" href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackConv('whatsapp_click', { source: 'hero_precio' })}>Pregunta precio y disponibilidad por WhatsApp</a>
@@ -1818,7 +1819,7 @@ function V2NaturalOrganic({ tweaks }) {
               <small>Superficie desde</small>
             </div>
           </div>
-          <div className="v2-hero-badge-floating">{LOTES_ETAPA3_TXT}</div>
+          <div className="v2-hero-badge-floating">{ULTIMOS_LOTES_TXT}</div>
         </div>
         <div className="v2-scroll" data-comment-anchor="26d3d13839-div-788-9">
           <span>Descubrir</span>
@@ -1879,23 +1880,23 @@ function V2NaturalOrganic({ tweaks }) {
         <div className="v2-lots-card" data-comment-anchor="41c2a55d58-div-808-9">
           <div className="v2-section-head" style={{ position: 'relative', zIndex: 1, marginBottom: 0 }}>
             <span className="v2-eyebrow">Plano maestro</span>
-            <h2>Últimos lotes<br /><em>de la Etapa 3</em></h2>
+            <h2>Últimos lotes<br /><em>de Calle Soyola</em></h2>
             <p>Vendemos por etapas para garantizar la consolidación del fraccionamiento.</p>
           </div>
           <div className="v2-lots-stats">
-            <div className="v2-lots-stat"><strong>${PRECIO_M2}<sup>m²</sup></strong><small>Etapa 3 · últimos lotes</small></div>
-            <div className="v2-lots-stat"><strong>${ETAPA4.precioM2}<sup>m²</sup></strong><small>Etapa 4 · preventa</small></div>
+            <div className="v2-lots-stat"><strong>${PRECIO_M2}<sup>m²</sup></strong><small>Calle Soyola · últimos lotes</small></div>
+            <div className="v2-lots-stat"><strong>${PREVENTA_SOYOLA.precioM2}<sup>m²</sup></strong><small>Calle Soyola · nueva preventa</small></div>
             <div className="v2-lots-stat"><strong>155<sup>m²</sup></strong><small>Superficie mínima</small></div>
             <div className="v2-lots-stat"><strong>200<sup>m²</sup></strong><small>Mayoría de los lotes</small></div>
           </div>
-          <div className="v2-etapa4" id="etapa4">
-            <span className="v2-etapa4-tag">Etapa 4 — Preventa</span>
-            <h3>Preventa · <em>${ETAPA4.precioM2} MXN por m²</em> · {ETAPA4.listos.toLowerCase()}</h3>
-            <ul className="v2-etapa4-list">
+          <div className="v2-preventa" id="preventa">
+            <span className="v2-preventa-tag">Calle Soyola — Nueva preventa</span>
+            <h3><em>${PREVENTA_SOYOLA.precioM2} MXN por m²</em> · {PREVENTA_SOYOLA.listos.toLowerCase()}</h3>
+            <ul className="v2-preventa-list">
               <li>Mismo plan: 30% de enganche + 12 mensualidades sin intereses</li>
             </ul>
             {promoActiva && (
-              <button type="button" className="v2-btn v2-btn-primary v2-etapa4-btn" onClick={() => setCuponOpen(true)}>
+              <button type="button" className="v2-btn v2-btn-primary v2-preventa-btn" onClick={() => setCuponOpen(true)}>
                 Buen Fin: obtener mi cupón de ${PROMO_BUENFIN.descuento} →
               </button>
             )}
@@ -2218,7 +2219,7 @@ function V2BuenFinBanner({ onCupon }) {
     <div className="v2-bf-banner" role="region" aria-label="Promoción Buen Fin">
       <div className="v2-bf-text">
         <strong>Buen Fin en San Andrés: <em>${PROMO_BUENFIN.descuento} de descuento</em> en tu lote</strong>
-        <small>Últimos lotes de la Etapa 3 + preventa de la Etapa 4 · 30% de enganche + 12 meses sin intereses</small>
+        <small>Calle Soyola: últimos lotes + nueva preventa · 30% de enganche + 12 meses sin intereses</small>
       </div>
       <div className="v2-bf-count" aria-label={`Termina en ${d} días ${h} horas ${m} minutos`}>
         <span>{d}<small>días</small></span>
@@ -2315,7 +2316,7 @@ function V2CuponModal({ onClose, onPrivacy }) {
             <input type="hidden" name="form-name" value={PROMO_BUENFIN.formName} />
             <input name="bot-field" type="hidden" />
             <h3>Obtén tu cupón de <em>${PROMO_BUENFIN.descuento}</em></h3>
-            <p className="v2-cupon-lead">Regístrate y recibe tu código personal para los últimos lotes de la Etapa 3 o la preventa de la Etapa 4. Válido hasta el 30 de noviembre.</p>
+            <p className="v2-cupon-lead">Regístrate y recibe tu código personal para los últimos lotes de Calle Soyola o su nueva preventa. Válido hasta el 30 de noviembre.</p>
             <div className="v2-field">
               <label htmlFor="bf-nombre">Nombre *</label>
               <input id="bf-nombre" type="text" name="nombre" autoComplete="name" value={fields.nombre} onChange={set('nombre')} placeholder="Tu nombre" required />
