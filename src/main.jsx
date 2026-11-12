@@ -40,6 +40,12 @@ const PROMO_TERMINOS = 'Cupón Buen Fin San Andrés. Descuento de $30,000 MXN so
 const WA_MSG = 'Hola, me interesa un lote en San Andrés, ¿me pasan precios y planes de pago?';
 const WA_URL = `https://wa.me/527751612654?text=${encodeURIComponent(WA_MSG)}`;
 
+// Link de Google Maps del desarrollo (mismo que el de la sección de contacto).
+const MAPS_URL = 'https://maps.app.goo.gl/jfZzxHNvyYm3Ubpu6';
+// Navegadores internos de apps (Instagram, Facebook, TikTok): bloquean el iframe de Google Maps.
+const IN_APP_BROWSER = typeof navigator !== 'undefined' &&
+  /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS|musical_ly|TikTok|BytedanceWebview/i.test(navigator.userAgent || '');
+
 // Dispara evento a GA4 siempre, y a Google Ads si hay label configurado.
 function trackConv(name, params = {}) {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') return;
@@ -1039,6 +1045,10 @@ function V2NaturalOrganic({ tweaks }) {
           box-shadow: 0 20px 60px rgba(94,111,85,.15);
         }
         .v2-map-card iframe { display: block; width: 100%; height: 100%; border: 0; filter: saturate(.85) hue-rotate(-10deg); }
+        .v2-map-card:has(.v2-map-static) { aspect-ratio: 1/1 !important; max-width: 640px; margin: 0 auto; }
+        .v2-map-static { display: block; width: 100%; height: 100%; }
+        .v2-map-static img { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .v2-map-cta { display: flex; justify-content: center; margin-top: 20px; }
         .v2-map-overlay {
           position: absolute; bottom: 24px; left: 24px;
           background: white; padding: 16px 20px; border-radius: 20px;
@@ -1995,19 +2005,32 @@ function V2NaturalOrganic({ tweaks }) {
       </section>
       <section className="v2-map-section">
         <div className="v2-map-card v2-fade">
-          <iframe
-            src="https://www.google.com/maps?q=20.1152008,-98.4097635&z=19&output=embed"
-            allowFullScreen="" loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Ubicación Residencial San Andrés" />
-          <div className="v2-map-overlay">
-            <div className="v2-map-overlay-ic">◉</div>
-            <div>
-              <small>Residencial</small>
-              <strong>San <em>Andrés</em></strong>
-              <small style={{ marginTop: 4 }}>Carr. Tulancingo–Pachuca, Hgo.</small>
-            </div>
-          </div>
+          {IN_APP_BROWSER ? (
+            /* Los navegadores internos de Instagram/Facebook/TikTok no pueden cargar
+               el iframe de Google Maps (ERR_BLOCKED_BY_RESPONSE): mostramos el mapa ilustrado. */
+            <a className="v2-map-static" href={MAPS_URL} target="_blank" rel="noopener noreferrer" aria-label="Abrir la ubicación en Google Maps">
+              <img src="/ubicacion-mapa.webp" alt="Mapa de ubicación de Residencial San Andrés sobre la carretera Tulancingo–Pachuca" loading="lazy" width="1200" height="1200" />
+            </a>
+          ) : (
+            <>
+              <iframe
+                src="https://www.google.com/maps?q=20.1152008,-98.4097635&z=19&output=embed"
+                allowFullScreen="" loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Ubicación Residencial San Andrés" />
+              <div className="v2-map-overlay">
+                <div className="v2-map-overlay-ic">◉</div>
+                <div>
+                  <small>Residencial</small>
+                  <strong>San <em>Andrés</em></strong>
+                  <small style={{ marginTop: 4 }}>Carr. Tulancingo–Pachuca, Hgo.</small>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="v2-map-cta">
+          <a className="v2-btn v2-btn-ghost" href={MAPS_URL} target="_blank" rel="noopener noreferrer">Cómo llegar · Abrir en Google Maps →</a>
         </div>
       </section>
 
